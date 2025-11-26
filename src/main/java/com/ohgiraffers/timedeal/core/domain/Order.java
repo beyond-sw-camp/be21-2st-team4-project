@@ -19,10 +19,10 @@ import lombok.NoArgsConstructor;
 public class Order extends BaseEntity {
 
     @Column(name = "user_id", nullable = false)
-    private int userId;
+    private Long userId;
 
     @Column(name = "total_amount", nullable = false)
-    private int totalAmount;
+    private Integer totalAmount;
 
     @Enumerated(EnumType.STRING)
     @Column(name="order_status")
