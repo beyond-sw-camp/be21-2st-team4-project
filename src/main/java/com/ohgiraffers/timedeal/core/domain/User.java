@@ -12,19 +12,27 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "examples")
+@Table(name = "users")
 
 public class User extends BaseEntity {
-    @Column(name="email",length=10,nullable = false,unique=true)
+    @Column(name = "email", length = 10, nullable = false, unique = true)
     private String email;
 
-    @Column(name="password",length=10,nullable = false)
+    @Column(name = "password", length = 10, nullable = false)
     private String password;
 
-    @Column(name="money")
-    private int money = 0;
+    @Column(name = "money")
+    private int money = 100000;
 
+    @Column(name = "name")
+    private String name;
+
+
+    public User (String email, String password, String name) {
+        this.email = email;
+        this.password = password;
+        this.name = name;
+    }
     @Column(name="total_saved")
     private int total_saved =0;
 
