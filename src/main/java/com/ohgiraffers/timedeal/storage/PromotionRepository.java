@@ -1,6 +1,6 @@
 package com.ohgiraffers.timedeal.storage;
 
-
+import com.ohgiraffers.timedeal.core.api.controller.v1.response.PromotionResponse;
 import com.ohgiraffers.timedeal.core.domain.Promotion;
 import com.ohgiraffers.timedeal.core.enums.PromotionStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,4 +19,10 @@ public interface PromotionRepository extends JpaRepository<Promotion,Long> {
     Promotion save(Promotion promotion);
 
     void promotionUpdateStatusById(Long id);
+
+    Promotion findPromotionStatusALl();
+
+    PromotionStatus findPromotionStatus();
+
+    List<PromotionResponse> findAllByPromotionStatus(PromotionStatus status);
 }

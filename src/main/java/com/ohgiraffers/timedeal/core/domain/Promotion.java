@@ -18,9 +18,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Table(name = "promotions")
 public class Promotion extends BaseEntity {
-
-
-
     @Column(name = "admin_id" ,  nullable = false)
     private Long adminId;
 
@@ -28,7 +25,7 @@ public class Promotion extends BaseEntity {
     private Long productId;
 
     @Column(name = "sale_price")
-    private Double salePrice;
+    private Integer salePrice;
 
     @Column(name = "discount_rate")
     private Double discountRate;
@@ -38,12 +35,6 @@ public class Promotion extends BaseEntity {
 
     @Column(name = "end_time")
     private LocalDateTime endTime;
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 
     @Column(name = "total_quantity")
     private Integer totalQuantity;
@@ -64,5 +55,8 @@ public class Promotion extends BaseEntity {
         this.totalQuantity = totalQuantity;
     }
 
+    public void changeStatus(PromotionStatus promotionStatus) {
+        this.promotionStatus = promotionStatus;
+    }
 
 }

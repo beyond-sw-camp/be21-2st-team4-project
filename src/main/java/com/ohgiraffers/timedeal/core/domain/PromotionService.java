@@ -4,25 +4,22 @@ import com.ohgiraffers.timedeal.core.api.controller.v1.request.PromotionRequest;
 import com.ohgiraffers.timedeal.core.api.controller.v1.response.PromotionResponse;
 import com.ohgiraffers.timedeal.core.enums.PromotionStatus;
 import com.ohgiraffers.timedeal.core.support.response.ApiResult;
+import com.ohgiraffers.timedeal.core.support.response.ResultType;
 import com.ohgiraffers.timedeal.storage.PromotionRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.ohgiraffers.timedeal.core.support.response.ApiResult.success;
 
 @Service
 public class PromotionService {
     private final PromotionRepository promotionRepository;
-
-    public Promotion promotionUpdateStatusById(Long id) {
-        promotionRepository.promotionUpdateStatusById(id)
-    }
 
     @Autowired
     public PromotionService(PromotionRepository promotionRepository) {
@@ -33,8 +30,8 @@ public class PromotionService {
         promotionRepository.findByProductId(productId);
     }
 
-        public PromotionResponse promotionSave(PromotionRequest pr) {
-            AtomicBoolean created = new AtomicBoolean(false);
+    public void promotionSave(PromotionRequest pr) {
+            AtomicReference<ResultType> createdSuccess = new AtomicReference<>(ResultType.ERROR);
 
             Promotion promotion =
                     promotionRepository.findByProductId(pr.getProductID())
@@ -48,26 +45,50 @@ public class PromotionService {
                                        pr.getEndTime(),
                                        pr.getTotalQuantity()
                                );
-                               created.set(true);
+                               createdSuccess.set(ResultType.SUCCESS);
                                return promotionRepository.save(promotion1);
 
                             });
-            return new PromotionResponse(created.get());
         }
 
-}
-/*
-PromotionStatus status = promotion.getPromotionStatus();
+        @Transactional
+    public void promotionUpdateStatusById(Long id) {
+        promotionRepository.promotionUpdateStatusById(id);
+        Promotion promotion = promotionRepository.findById(id).get();
+
+        PromotionStatus status = promotion.getPromotionStatus();
         switch (status) {
-        case SCHEDULER:
-        if(promotion.getStartTime().isAfter(LocalDateTime.now())){
-        promotion.setPromotionStatus(PromotionStatus.ACTIVE);
+            case SCHEDULER:
+                if (promotion.getStartTime().isAfter(LocalDateTime.now())) {
+                    promotion.changeStatus(PromotionStatus.ACTIVE);
                 }
-                        break;
-                        case ACTIVE:
-        if(promotion.getEndTime().isAfter(LocalDateTime.now())){
-        promotion.setPromotionStatus(PromotionStatus.ENDED);
+                break;
+            case ACTIVE:
+                if (promotion.getEndTime().isAfter(LocalDateTime.now())) {
+                    promotion.setPromotionStatus(PromotionStatus.ENDED);
                 }
-                        break;
-default:break;
-        }*/
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void deletePromotion(Long Id) {
+        int result = promotionRepository.deleteById(Id);
+        if (result > 0) {
+            //
+        }
+    }
+
+    public List<PromotionResponse> findAll(){
+        return (List<PromotionResponse>) promotionRepository.findAll().stream();
+
+    };
+
+
+    public List<PromotionResponse> getPromotionsWithStatus(PromotionStatus promotionStatus) {
+        return promotionRepository.findAllByPromotionStatus(promotionStatus);
+
+    }
+}
+
