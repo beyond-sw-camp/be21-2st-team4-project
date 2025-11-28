@@ -7,15 +7,19 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "promotions")
 public class Promotion extends BaseEntity {
+
+
 
     @Column(name = "admin_id" ,  nullable = false)
     private Long adminId;
@@ -51,10 +55,14 @@ public class Promotion extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private PromotionStatus promotionStatus = PromotionStatus.ACTIVE;
 
-    public void increaseSoldQuantity() {
-        if(this.soldQuantity > this.totalQuantity) {
-            throw new IllegalArgumentException("재고가 모두 소진되었습니다.");
-        }
-        this.soldQuantity += 1;
+    public Promotion(Long adminId, Long productId, Double discountRate, LocalDateTime startTime, LocalDateTime endTime, Integer totalQuantity) {
+        this.adminId = adminId;
+        this.productId = productId;
+        this.discountRate = discountRate;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.totalQuantity = totalQuantity;
     }
+
+
 }
