@@ -18,13 +18,15 @@ public class UserService {
     private final OrderRepository orderRepository;
     private final OrderDetailRepository orderDetailRepository;
     private final PromotionRepository promotionRepository;
+    private final ProductRepository productRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository, OrderRepository orderRepository,OrderDetailRepository orderDetailRepository,PromotionRepository promotionRepository) {
+    public UserService(UserRepository userRepository, OrderRepository orderRepository,OrderDetailRepository orderDetailRepository,PromotionRepository promotionRepository, ProductRepository productRepository) {
         this.userRepository = userRepository;
         this.orderRepository = orderRepository;
         this.orderDetailRepository = orderDetailRepository;
         this.promotionRepository = promotionRepository;
+        this.productRepository = productRepository;
     }
     public void signIn(String email, String password) {
         boolean result = userRepository.existsByEmailAndPassword(email, password);
@@ -34,7 +36,7 @@ public class UserService {
 
     public void signUp(String email, String password, String name) {
         // 1. 이메일 중복 검사
-        if (!userRepository.existsByEmail(email)) {
+        if (userRepository.existsByEmail(email)) {
             throw new CoreException(ErrorType.DEFAULT_ERROR);
         }
         // 2. User 생성 후 저장
@@ -70,7 +72,7 @@ public class UserService {
 //    }
 
     // 2. 마이페이지만
-    public MyPageResponse getMyPage(Long userId) {
+    public MyPageResponse getMe(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
 
@@ -81,28 +83,31 @@ public class UserService {
         );
     }
 
-    public OrderDetailResponse getMyPageOrders(Long userId) {
+    public OrderDetailResponse getMeOrders(Long userId) {
         List<Order> orders = orderRepository.findByUserId(userId); // 병합 필요
 
         List<MyPageOrderResponse> myPageOrders = new ArrayList<>();
         for (Order order : orders) {
             List<OrderDetail> details = orderDetailRepository.findByOrderId(order.getId()); // 병합 필요
             for (OrderDetail detail : details) {
-                // 예: promotionId로 Promotion 정보 조회 (상품명/이미지 가져오는 용도)
-                Promotion promotion = promotionRepository.findById(detail.getPromotionId()) //Repository에 메소드가 없는데 오류 x
-                        .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
 
+                List<Promotion> promotions = promotionRepository.findByProductId(detail.getPromotionId()); //Repository에 메소드가 없는데 오류 x
 
+                for(Promotion promotion : promotions){
+                    product product = productRepository.findById(promotion.getProductId())
+                            .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
 
-                MyPageOrderResponse response = new MyPageOrderResponse(
-                        order.getId(),
-                        "",//product.getImageUrl(),
-                        "", //product.getName(),
-                        detail.getQuantity(),
-                        detail.getSubtotal(),
-                        order.getCreatedAt()
-                );
-                myPageOrders.add(response);
+                    MyPageOrderResponse response = new MyPageOrderResponse(
+                            order.getId(),
+                            "",//product.getImageUrl(),
+                            "", //product.getName(),
+                            detail.getQuantity(),
+                            detail.getSubtotal(),   //double형으로 바꿈
+                            order.getCreatedAt()
+                    );
+
+                    myPageOrders.add(response);
+                }
             }
         }
         return new OrderDetailResponse(myPageOrders);

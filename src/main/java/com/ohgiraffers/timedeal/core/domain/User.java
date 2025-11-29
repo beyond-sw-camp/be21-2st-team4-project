@@ -38,9 +38,6 @@ public class User extends BaseEntity {
         this.password = password;
         this.name = name;
     }
-    @Column(name="total_saved")
-    private int total_saved =0;
-
     public void decreaseMoney(Long salePrice) {
         if(this.money < salePrice) {
             throw new IllegalArgumentException("잔액이 부족합니다.");

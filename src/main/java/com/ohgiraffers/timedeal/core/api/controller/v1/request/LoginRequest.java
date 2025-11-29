@@ -3,12 +3,12 @@ package com.ohgiraffers.timedeal.core.api.controller.v1.request;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Getter
 @AllArgsConstructor
+@NoArgsConstructor
+@Getter
 public class LoginRequest {
-    private final String email;
-
-
-    private final String password;
+    private String email;
+    private String password;
 }

@@ -9,14 +9,11 @@ import com.ohgiraffers.timedeal.core.domain.UserService;
 import com.ohgiraffers.timedeal.core.support.response.ApiResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 public class UserController {
     private final UserService userService;
 
@@ -46,14 +43,14 @@ public class UserController {
 
     //2-1. 마이페이지
     @GetMapping("/api/v1/users/me")
-    public ApiResult<MyPageResponse> getMyPage(@RequestParam Long userId) {
-        return ApiResult.success(userService.getMyPage(userId));
+    public ApiResult<MyPageResponse> getMe(@RequestParam Long userId) {
+        return ApiResult.success(userService.getMe(userId));
     }
 
     //2-2. 주문내역
     @GetMapping("/api/v1/users/me/orders")
-    public ApiResult<OrderDetailResponse> getMyPageOrders(@RequestParam Long userId) {
-        return ApiResult.success(userService.getMyPageOrders(userId));
+    public ApiResult<OrderDetailResponse> getMeOrders(@RequestParam Long userId) {
+        return ApiResult.success(userService.getMeOrders(userId));
     }
 
 }

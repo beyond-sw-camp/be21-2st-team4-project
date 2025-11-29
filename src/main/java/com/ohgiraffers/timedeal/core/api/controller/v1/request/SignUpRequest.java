@@ -3,12 +3,14 @@ package com.ohgiraffers.timedeal.core.api.controller.v1.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 public class SignUpRequest {
-    private final String email;
-    private final String password;
-    private final String name;
+    private String email;
+    private String password;
+    private String name;
 
 }

@@ -19,7 +19,7 @@ public record MyPageOrderResponse(
         String image,       // 상품 이미지
         String itemName,    // 상품 이름
         Integer quantity,   // 개수
-        Integer price,       // 가격(=subtotal)
+        Double price,       // 가격(=subtotal)
         LocalDateTime orderDate  // 주문 날짜
 ){
 
