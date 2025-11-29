@@ -20,12 +20,12 @@ public class QueueScheduler {
     public void runWaitQueue() {
         ZSetOperations<String, String> zSetOps = stringRedisTemplate.opsForZSet();
 
-        // 현재 등록된 프로모션 dealId 조회
-        Long dealId = 1L;
+        // 현재 등록된 프로모션 timedealId 조회
+        Long timedealId = 1L;
 
         // key값을 dealId로 구분
-        String waitQueueKey = TimedealKeys.waitQueue(dealId);
-        String proceedQueueKey = TimedealKeys.proceedQueue(dealId);
+        String waitQueueKey = TimedealKeys.waitQueue(timedealId);
+        String proceedQueueKey = TimedealKeys.proceedQueue(timedealId);
 
         // 진행 큐에서 만료된 유저 정리
         long now = System.currentTimeMillis();

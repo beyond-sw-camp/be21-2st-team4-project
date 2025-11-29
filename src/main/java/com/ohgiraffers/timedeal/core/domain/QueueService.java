@@ -13,13 +13,13 @@ import org.springframework.stereotype.Service;
 public class QueueService {
     private final StringRedisTemplate stringRedisTemplate;
 
-    public QueueResponse enterQueue(Long dealId, Long userId) {
+    public QueueResponse enterQueue(Long timedealId, Long userId) {
         ZSetOperations<String, String> zSetOps = stringRedisTemplate.opsForZSet();
 
-        // key값을 dealId로 구분
+        // key값을 timedealId로 구분
         String userStr = "user:" + userId;
-        String waitQueueKey = TimedealKeys.waitQueue(dealId);
-        String proceedQueueKey = TimedealKeys.proceedQueue(dealId);
+        String waitQueueKey = TimedealKeys.waitQueue(timedealId);
+        String proceedQueueKey = TimedealKeys.proceedQueue(timedealId);
 
         // proceed queue에 있는지 확인
         if(zSetOps.rank(proceedQueueKey, userStr) != null) {
@@ -38,13 +38,13 @@ public class QueueService {
         return new QueueResponse(position, waitTime, QueueStatus.WAITING);
     }
 
-    public QueueResponse getQueue(Long dealId, Long userId) {
+    public QueueResponse getQueue(Long timedealId, Long userId) {
         ZSetOperations<String, String> zSetOps = stringRedisTemplate.opsForZSet();
 
-        // key값을 dealId로 구분
+        // key값을 timedealId로 구분
         String userStr = "user:" + userId;
-        String waitQueueKey = TimedealKeys.waitQueue(dealId);
-        String proceedQueueKey = TimedealKeys.proceedQueue(dealId);
+        String waitQueueKey = TimedealKeys.waitQueue(timedealId);
+        String proceedQueueKey = TimedealKeys.proceedQueue(timedealId);
 
         // wait queue에 있는지 확인
         Long position = zSetOps.rank(waitQueueKey, userStr);
