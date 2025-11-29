@@ -1,7 +1,8 @@
 import { api } from './api';
 import { API_ENDPOINTS } from '../config/api';
-import { ApiResult, handleApiResponse } from '../types/api';
-import { Order, CreateOrderRequest } from '../types/order';
+import { handleApiResponse } from '../types/api';
+import type { ApiResult } from '../types/api';
+import type { Order, CreateOrderRequest } from '../types/order';
 
 export const orderService = {
   /**

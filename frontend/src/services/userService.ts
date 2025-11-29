@@ -1,8 +1,9 @@
 import { api } from './api';
 import { API_ENDPOINTS } from '../config/api';
-import { ApiResult, handleApiResponse } from '../types/api';
-import { User, SignInRequest, SignInResponse, SignUpRequest } from '../types/user';
-import { Order } from '../types/order';
+import { handleApiResponse } from '../types/api';
+import type { ApiResult } from '../types/api';
+import type { User, SignInRequest, SignInResponse, SignUpRequest } from '../types/user';
+import type { Order } from '../types/order';
 
 export const userService = {
   /**

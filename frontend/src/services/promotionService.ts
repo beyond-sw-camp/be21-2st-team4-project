@@ -1,7 +1,8 @@
 import { api } from './api';
 import { API_ENDPOINTS } from '../config/api';
-import { ApiResult, handleApiResponse } from '../types/api';
-import { Promotion, PromotionListResponse } from '../types/promotion';
+import { handleApiResponse } from '../types/api';
+import type { ApiResult } from '../types/api';
+import type { Promotion } from '../types/promotion';
 
 export const promotionService = {
   /**
