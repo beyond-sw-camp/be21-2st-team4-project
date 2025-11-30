@@ -4,7 +4,9 @@ import { Layout } from './components/layout';
 import { useAuth } from './hooks/useAuth';
 
 // Pages
+import { RoleSelect } from './pages/RoleSelect';
 import { Login } from './pages/Login';
+import { AdminLogin } from './pages/AdminLogin';
 import { Signup } from './pages/Signup';
 import { PromotionList } from './pages/PromotionList';
 import { Queue } from './pages/Queue';
@@ -15,38 +17,44 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public Routes */}
+        {/* Role Selection - Entry Point */}
+        <Route path="/" element={<RoleSelect />} />
+
+        {/* Public Routes - User */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-        {/* Protected Routes with Layout */}
-        <Route
-          path="/"
-          element={
-            <Layout user={user} onLogout={logout}>
-              <Navigate to="/promotions" replace />
-            </Layout>
-          }
-        />
+        {/* Public Routes - Admin */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+
+        {/* Protected Routes - User with Layout */}
         <Route
           path="/promotions"
           element={
-            <Layout user={user} onLogout={logout}>
-              <PromotionList />
-            </Layout>
+            user ? (
+              <Layout user={user} onLogout={logout}>
+                <PromotionList />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
           }
         />
         <Route
           path="/queue/:promotionId"
           element={
-            <Layout user={user} onLogout={logout}>
-              <Queue />
-            </Layout>
+            user ? (
+              <Layout user={user} onLogout={logout}>
+                <Queue />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
           }
         />
 
         {/* Fallback */}
-        <Route path="*" element={<Navigate to="/promotions" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

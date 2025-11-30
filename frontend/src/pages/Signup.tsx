@@ -146,6 +146,15 @@ export const Signup: React.FC = () => {
             로그인
           </Link>
         </div>
+
+        <div className="mt-4 text-center">
+          <button
+            onClick={() => navigate('/')}
+            className="text-gray-600 hover:text-gray-900 text-sm"
+          >
+            ← 돌아가기
+          </button>
+        </div>
       </Card>
     </div>
   );
