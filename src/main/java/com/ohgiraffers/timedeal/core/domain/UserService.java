@@ -59,9 +59,9 @@ public class UserService {
             MyPageOrderResponse response = new MyPageOrderResponse(
                     order.getId(),
                     detail.getImageUrl(),
-                    detail.getName(),
+                    detail.getPromotionName(),
                     detail.getQuantity(),
-                    detail.getSubtotal(),   //double형으로 바꿈
+                    detail.getSubtotal(),
                     order.getCreatedAt()
             );
             myPageOrders.add(response);
