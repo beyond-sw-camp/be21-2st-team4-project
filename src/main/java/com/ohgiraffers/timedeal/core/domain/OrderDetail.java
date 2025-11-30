@@ -30,7 +30,7 @@ public class OrderDetail extends BaseEntity {
     @Column(name = "subtotal", nullable = false)
     private Integer subtotal;
 
-    @Column(name = "promotionName", length = 255, nullable = false)
+    @Column(name = "promotion_name", length = 255, nullable = false)
     private String promotionName;
 
     @Column(name = "image_url", nullable = false)
