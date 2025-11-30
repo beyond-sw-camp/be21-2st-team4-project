@@ -18,4 +18,8 @@ export const API_ENDPOINTS = {
 
   // Order
   ORDERS: '/orders',
+
+  // Admin
+  ADMIN_LOGIN: '/admin/login',
+  ADMIN_DASHBOARD: '/admin/dashboard',
 } as const;
