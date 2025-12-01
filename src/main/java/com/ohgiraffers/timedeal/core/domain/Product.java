@@ -2,16 +2,13 @@ package com.ohgiraffers.timedeal.core.domain;
 
 import com.ohgiraffers.timedeal.storage.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @NoArgsConstructor
-//@AllArgsConstructor
 @Table(name = "products")
-
 public class Product extends BaseEntity {
 
     @Column(name = "name", length = 255, nullable = false)
@@ -29,20 +26,21 @@ public class Product extends BaseEntity {
     @Column(name = "category", length = 255, nullable = false)
     private String category;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "admin_id", nullable = false)
-    private Admin admin;
+    @Column(name = "admin_id", nullable = false)
+    private Long adminId; // FIX: ManyToOne 연관 관계를 제거하고 Long 타입의 adminId 필드 사용
 
-    public Product(String name, String description, String imageUrl, Integer price, String category, Admin admin) {
+    // 생성자 (등록 시 사용)
+    public Product(String name, String description, String imageUrl, Integer price, String category, Long adminId) { // FIX: Admin -> Long adminId로 변경
         this.name = name;
         this.description = description;
         this.imageUrl = imageUrl;
         this.price = price;
         this.category = category;
-        this.admin = admin;     //admins테이블의 id
+        this.adminId = adminId;
     }
 
-    public void update(String name, String description, Integer price, String imageUrl, String category, Admin admin) {
+    // 수정 메서드
+    public void update(String name, String description, Integer price, String imageUrl, String category, Long adminId) { // FIX: Admin -> Long adminId로 변경
         this.name = name;
         this.description = description;
         this.price = price;
@@ -50,6 +48,6 @@ public class Product extends BaseEntity {
             this.imageUrl = imageUrl;
         }
         this.category = category;
-        this.admin = admin;     //admins테이블의 id
+        this.adminId = adminId;
     }
 }

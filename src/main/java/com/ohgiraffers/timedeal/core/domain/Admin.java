@@ -23,10 +23,6 @@ public class Admin extends BaseEntity {
     @Column(name="company", nullable = false, length = 10)
     private String company;
 
-    // 양방향 매핑: 하나의 Admin이 여러 Product를 가짐
-    @OneToMany(mappedBy = "admin", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Product> products = new ArrayList<>();
-
     // 생성자 (등록 시 사용)
     public Admin(String email, String password, String company) {
         this.email = email;

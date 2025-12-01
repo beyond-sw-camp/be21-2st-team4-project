@@ -51,8 +51,7 @@ public class AdminService {
     // 관리자 삭제
     @Transactional
     public void deleteAdmin(Long adminId) {
-        Admin admin = adminRepository.findById(adminId)
-                .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
-        adminRepository.delete(admin);
+        // FIX: 불필요한 조회 없이 deleteById 사용
+        adminRepository.deleteById(adminId);
     }
 }

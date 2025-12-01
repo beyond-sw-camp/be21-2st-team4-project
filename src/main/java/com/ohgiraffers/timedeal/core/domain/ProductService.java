@@ -1,23 +1,26 @@
 package com.ohgiraffers.timedeal.core.domain;
 
 import com.ohgiraffers.timedeal.core.api.controller.v1.request.ProductRequest;
+import com.ohgiraffers.timedeal.core.api.controller.v1.response.ProductListResponse;
 import com.ohgiraffers.timedeal.core.api.controller.v1.response.ProductResponse;
-import com.ohgiraffers.timedeal.storage.AdminRepository;
-import com.ohgiraffers.timedeal.storage.ProductRepository;
+import com.ohgiraffers.timedeal.storage.AdminRepository; // 💡 FIX: Import AdminRepository
+import com.ohgiraffers.timedeal.storage.ProductRepository; // 💡 FIX: Import ProductRepository
 import com.ohgiraffers.timedeal.core.support.error.CoreException;
 import com.ohgiraffers.timedeal.core.support.error.ErrorType;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Collectors; // Added necessary utility import
 
 @Service
 public class ProductService {
 
+    // 💡 FIX: Declare missing repositories as final fields
     private final ProductRepository productRepository;
     private final AdminRepository adminRepository;
 
+    // 💡 FIX: Add constructor for dependency injection
     public ProductService(ProductRepository productRepository, AdminRepository adminRepository) {
         this.productRepository = productRepository;
         this.adminRepository = adminRepository;
@@ -26,7 +29,8 @@ public class ProductService {
     // 상품 등록
     @Transactional
     public void createProduct(ProductRequest request) {
-        Admin admin = adminRepository.findById(request.getAdminId())
+        // Admin 객체를 조회하는 것은 Admin ID 유효성 검사 목적임
+        adminRepository.findById(request.getAdminId())
                 .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
 
         Product product = new Product(
@@ -35,7 +39,7 @@ public class ProductService {
                 request.getImageUrl(),
                 request.getPrice(),
                 request.getCategory(),
-                admin
+                request.getAdminId()
         );
 
         productRepository.save(product);
@@ -47,17 +51,17 @@ public class ProductService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
 
-        Admin admin = adminRepository.findById(request.getAdminId())
+        adminRepository.findById(request.getAdminId())
                 .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
 
         product.update(request.getName(), request.getDescription(),
                 request.getPrice(), request.getImageUrl(),
-                request.getCategory(), admin);
+                request.getCategory(), request.getAdminId());
 
         productRepository.save(product);
     }
 
-    // 상품 삭제
+    // 상품 삭제 (delete 메소드는 이미 delete(product)로 수정되어 불필요한 조회 방지)
     @Transactional
     public void delete(Long productId) {
         Product product = productRepository.findById(productId)
@@ -67,10 +71,10 @@ public class ProductService {
 
     // 전체 조회
     @Transactional(readOnly = true)
-    public List<ProductResponse> findAll() {
-        return productRepository.findAll().stream()
-                .map(ProductResponse::from)
-                .collect(Collectors.toList());
+    public ProductListResponse findAll() {
+        List<Product> products = productRepository.findAll();
+        // Use the from method in ProductListResponse
+        return ProductListResponse.from(products);
     }
 
     // 단건 조회
@@ -83,12 +87,12 @@ public class ProductService {
 
     // 관리자별 조회 (AdminController에서 사용)
     @Transactional(readOnly = true)
-    public List<ProductResponse> findByAdminId(Long adminId) {
-        Admin admin = adminRepository.findById(adminId)
+    public ProductListResponse findByAdminId(Long adminId) {
+        adminRepository.findById(adminId)
                 .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
-        return admin.getProducts().stream()
-                .map(ProductResponse::from)
-                .collect(Collectors.toList());
+
+        List<Product> products = productRepository.findByAdminId(adminId);
+        return ProductListResponse.from(products);
     }
 
     // 관리자 권한으로 수정
@@ -100,12 +104,12 @@ public class ProductService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
 
-        if (!product.getAdmin().getId().equals(admin.getId())) {
-            throw new CoreException(ErrorType.DEFAULT_ARGUMENT_NOT_VALID); // 권한 문제
+        if (!product.getAdminId().equals(admin.getId())) {
+            throw new CoreException(ErrorType.DEFAULT_ARGUMENT_NOT_VALID);
         }
 
         product.update(request.getName(), request.getDescription(), request.getPrice(),
-                request.getImageUrl(), request.getCategory(), admin);
+                request.getImageUrl(), request.getCategory(), admin.getId());
 
         return ProductResponse.from(productRepository.save(product));
     }
@@ -119,8 +123,8 @@ public class ProductService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
 
-        if (!product.getAdmin().getId().equals(admin.getId())) {
-            throw new CoreException(ErrorType.DEFAULT_ARGUMENT_NOT_VALID); // 권한 문제
+        if (!product.getAdminId().equals(admin.getId())) {
+            throw new CoreException(ErrorType.DEFAULT_ARGUMENT_NOT_VALID);
         }
 
         productRepository.delete(product);

@@ -21,7 +21,7 @@ public record ProductResponse(
                 product.getPrice(),
                 product.getImageUrl(),
                 product.getCategory(),
-                product.getAdmin() != null ? product.getAdmin().getId() : null
+                product.getAdminId()
         );
     }
 }
