@@ -15,15 +15,13 @@ import java.util.List;
 
 @RestController
 public class PromotionController {
-    private final PromotionRepository promotionRepository;
     private PromotionService promotionService;
 
 
 
     @Autowired
-    public PromotionController(PromotionService promotionService, PromotionRepository promotionRepository) {
+    public PromotionController(PromotionService promotionService) {
         this.promotionService = promotionService;
-        this.promotionRepository = promotionRepository;
     }
 
     @PostMapping("/api/v1/promotions")
@@ -51,8 +49,7 @@ public class PromotionController {
     }
     @GetMapping("api/v1/promotions")
     public ApiResult<List<PromotionResponse>> getAllPromotion() {
-        List<PromotionResponse> result = promotionService.findAll();
-        return ApiResult.success(result);
+        return ApiResult.success(promotionService.findAll());
     }
     @GetMapping("api/v1/promtions/{promotionStatus}")
     public ApiResult<List<PromotionResponse>> getPromotionsStatusAll(

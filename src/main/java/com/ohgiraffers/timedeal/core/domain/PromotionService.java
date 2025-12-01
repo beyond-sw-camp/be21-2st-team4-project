@@ -107,8 +107,8 @@ public class PromotionService {
                         p.getDiscountRate(),
                         p.getTotalQuantity(),
                         p.getStartTime(),
-                        p.getEndTime(),
-                        ResultType.SUCCESS
+                        p.getEndTime()
+
                 ))
                 .toList();
 
@@ -123,8 +123,7 @@ public class PromotionService {
                 p.getDiscountRate(),
                 p.getTotalQuantity(),
                 p.getStartTime(),
-                p.getEndTime(),
-                ResultType.SUCCESS
+                p.getEndTime()
         ))
                 .toList();
 

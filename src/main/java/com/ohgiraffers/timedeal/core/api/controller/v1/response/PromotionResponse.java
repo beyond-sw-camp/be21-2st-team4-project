@@ -16,7 +16,7 @@ public record PromotionResponse (
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime startTime,
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-        LocalDateTime endTime,
-        ResultType getSuccess){
+        LocalDateTime endTime
+        ){
 
 }
