@@ -2,6 +2,7 @@ package com.ohgiraffers.timedeal.core.domain;
 
 import com.ohgiraffers.timedeal.core.api.controller.v1.request.PromotionRequest;
 import com.ohgiraffers.timedeal.core.api.controller.v1.response.PromotionResponse;
+import com.ohgiraffers.timedeal.core.api.controller.v1.response.RedisPromotionResponse;
 import com.ohgiraffers.timedeal.core.enums.PromotionStatus;
 import com.ohgiraffers.timedeal.core.support.response.ApiResult;
 import com.ohgiraffers.timedeal.core.support.response.ResultType;
@@ -128,5 +129,13 @@ public class PromotionService {
                 .toList();
 
     }
+    public List<RedisPromotionResponse> returnSchedule() {
+        return promotionRepository.findPromotionIdAndTotalQuantityBYPromotionStatusisSCHEDULE();
+    }
+    public List<RedisPromotionResponse> returnActive() {
+        return promotionRepository.findPromotionIdAndTotalQuantityBYPromotionStatusisACTIVE();
+    }
+
 }
+
 

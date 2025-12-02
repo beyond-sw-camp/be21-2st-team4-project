@@ -8,7 +8,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
 @Schema(description = "대기열 상태 응답")
-public record QueueResponse(
+public record   QueueResponse(
         @Schema(description = "대기열 순번 (0부터 시작)", example = "100", minimum = "0", requiredMode = REQUIRED)
         @PositiveOrZero
         Long position,
