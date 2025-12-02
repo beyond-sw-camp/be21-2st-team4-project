@@ -24,12 +24,12 @@ export const AdminLogin = () => {
       // Note: 백엔드에 관리자 전용 로그인 API가 없으므로 일반 로그인 사용
       const response = await userService.signIn(formData.email, formData.password);
 
-      // SignInResponse를 User 형태로 변환
+      // SignInResponse를 User 형태로 변환 (임시)
       const user = {
-        id: response.userId,
-        email: response.email,
-        name: response.name,
-        balance: response.balance,
+        id: 1,
+        email: formData.email,
+        name: formData.email.split('@')[0],
+        balance: 0,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };

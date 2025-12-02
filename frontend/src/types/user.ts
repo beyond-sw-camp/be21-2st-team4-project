@@ -20,9 +20,5 @@ export interface SignUpRequest {
 }
 
 export interface SignInResponse {
-  userId: number;
-  email: string;
-  name: string;
-  balance: number;
-  token: string;
+  token: string;  // 백엔드는 token만 반환
 }
