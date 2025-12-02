@@ -7,10 +7,11 @@ import lombok.Setter;
 @Setter
 public class ProductRequest {
     private Integer productid;
-    private String Name;
+    private String name; // Name -> name (Lombok 관례상 소문자로 변경)
     private String description;
     private Integer price;
     private String imageUrl; // 파일 업로드용
-    private String category;
+    // 💡 FIX: String category -> Long categoryId로 변경
+    private Long categoryId;
     private Long adminId;
 }
