@@ -3,34 +3,38 @@ package com.ohgiraffers.timedeal.core.domain;
 import com.ohgiraffers.timedeal.core.api.controller.v1.request.ProductRequest;
 import com.ohgiraffers.timedeal.core.api.controller.v1.response.ProductListResponse;
 import com.ohgiraffers.timedeal.core.api.controller.v1.response.ProductResponse;
-import com.ohgiraffers.timedeal.storage.AdminRepository; // 💡 FIX: Import AdminRepository
-import com.ohgiraffers.timedeal.storage.ProductRepository; // 💡 FIX: Import ProductRepository
+import com.ohgiraffers.timedeal.storage.AdminRepository;
+import com.ohgiraffers.timedeal.storage.ProductRepository;
+import com.ohgiraffers.timedeal.storage.CategoryRepository; // 💡 CategoryRepository 임포트
 import com.ohgiraffers.timedeal.core.support.error.CoreException;
 import com.ohgiraffers.timedeal.core.support.error.ErrorType;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors; // Added necessary utility import
 
 @Service
 public class ProductService {
 
-    // 💡 FIX: Declare missing repositories as final fields
     private final ProductRepository productRepository;
     private final AdminRepository adminRepository;
+    private final CategoryRepository categoryRepository; // 💡 FIX: CategoryRepository 필드 추가
 
-    // 💡 FIX: Add constructor for dependency injection
-    public ProductService(ProductRepository productRepository, AdminRepository adminRepository) {
+    // 💡 FIX: 생성자에 CategoryRepository 주입
+    public ProductService(ProductRepository productRepository, AdminRepository adminRepository, CategoryRepository categoryRepository) {
         this.productRepository = productRepository;
         this.adminRepository = adminRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     // 상품 등록
     @Transactional
     public void createProduct(ProductRequest request) {
-        // Admin 객체를 조회하는 것은 Admin ID 유효성 검사 목적임
         adminRepository.findById(request.getAdminId())
+                .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
+
+        // 💡 FIX: Category ID로 Category Entity를 조회
+        Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
 
         Product product = new Product(
@@ -38,7 +42,7 @@ public class ProductService {
                 request.getDescription(),
                 request.getImageUrl(),
                 request.getPrice(),
-                request.getCategory(),
+                category, // 💡 FIX: Category 객체 전달
                 request.getAdminId()
         );
 
@@ -54,14 +58,19 @@ public class ProductService {
         adminRepository.findById(request.getAdminId())
                 .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
 
+        // 💡 FIX: Category ID로 Category Entity를 조회
+        Category category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
+
         product.update(request.getName(), request.getDescription(),
                 request.getPrice(), request.getImageUrl(),
-                request.getCategory(), request.getAdminId());
+                category, // 💡 FIX: Category 객체 전달
+                request.getAdminId());
 
         productRepository.save(product);
     }
 
-    // 상품 삭제 (delete 메소드는 이미 delete(product)로 수정되어 불필요한 조회 방지)
+    // 상품 삭제
     @Transactional
     public void delete(Long productId) {
         Product product = productRepository.findById(productId)
@@ -72,15 +81,16 @@ public class ProductService {
     // 전체 조회
     @Transactional(readOnly = true)
     public ProductListResponse findAll() {
-        List<Product> products = productRepository.findAll();
-        // Use the from method in ProductListResponse
+        // 💡 FIX: findAllWithCategory 사용
+        List<Product> products = productRepository.findAllWithCategory();
         return ProductListResponse.from(products);
     }
 
     // 단건 조회
     @Transactional(readOnly = true)
     public ProductResponse findById(Long productId) {
-        Product product = productRepository.findById(productId)
+        // 💡 FIX: findByIdWithCategory 사용
+        Product product = productRepository.findByIdWithCategory(productId)
                 .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
         return ProductResponse.from(product);
     }
@@ -91,7 +101,8 @@ public class ProductService {
         adminRepository.findById(adminId)
                 .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
 
-        List<Product> products = productRepository.findByAdminId(adminId);
+        // 💡 FIX: findByAdminIdWithCategory 사용
+        List<Product> products = productRepository.findByAdminIdWithCategory(adminId);
         return ProductListResponse.from(products);
     }
 
@@ -104,12 +115,16 @@ public class ProductService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
 
+        // 💡 FIX: Category ID로 Category Entity를 조회
+        Category category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
+
         if (!product.getAdminId().equals(admin.getId())) {
             throw new CoreException(ErrorType.DEFAULT_ARGUMENT_NOT_VALID);
         }
 
         product.update(request.getName(), request.getDescription(), request.getPrice(),
-                request.getImageUrl(), request.getCategory(), admin.getId());
+                request.getImageUrl(), category, admin.getId()); // 💡 FIX: Category 객체 전달
 
         return ProductResponse.from(productRepository.save(product));
     }
