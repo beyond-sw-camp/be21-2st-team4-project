@@ -18,7 +18,17 @@ export const PromotionList: React.FC = () => {
       const data = await promotionService.getPromotions();
       setPromotions(data);
     } catch (err: any) {
-      setError(err.message || '프로모션 목록을 불러오는데 실패했습니다.');
+      console.error('프로모션 로드 실패:', err);
+
+      // 백엔드 API 문제로 인한 임시 처리
+      // 백엔드 PromotionController 50번 라인: "api/v1/promotions" → "/api/v1/promotions" 수정 필요
+      setError(
+        '프로모션 목록을 불러올 수 없습니다.\n' +
+        '(백엔드 API 경로 확인 필요: GET /api/v1/promotions)'
+      );
+
+      // 임시 목 데이터 사용 (개발용)
+      // setPromotions([]);
     } finally {
       setLoading(false);
     }
