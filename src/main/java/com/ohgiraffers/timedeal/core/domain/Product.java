@@ -23,17 +23,13 @@ public class Product extends BaseEntity {
     @Column(name = "price", nullable = false)
     private Integer price;
 
+    @Column(name = "category", length = 255, nullable = false)
+    private String category; // Category 객체 대신 String category 유지
+
     @Column(name = "admin_id", nullable = false)
     private Long adminId;
 
-    // 💡 FIX: Category와 ManyToOne 관계 설정 (category_id 컬럼 생성)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", nullable = false)
-    private Category category;
-
-    // 생성자 (등록 시 사용)
-    // 💡 FIX: String category -> Category category로 변경
-    public Product(String name, String description, String imageUrl, Integer price, Category category, Long adminId) {
+    public Product(String name, String description, String imageUrl, Integer price, String category, Long adminId) {
         this.name = name;
         this.description = description;
         this.imageUrl = imageUrl;
@@ -42,8 +38,7 @@ public class Product extends BaseEntity {
         this.adminId = adminId;
     }
 
-    // 💡 FIX: String category -> Category category로 변경
-    public void update(String name, String description, Integer price, String imageUrl, Category category, Long adminId) {
+    public void update(String name, String description, Integer price, String imageUrl, String category, Long adminId) {
         this.name = name;
         this.description = description;
         this.price = price;
