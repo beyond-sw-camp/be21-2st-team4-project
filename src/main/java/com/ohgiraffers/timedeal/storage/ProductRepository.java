@@ -1,13 +1,11 @@
 package com.ohgiraffers.timedeal.storage;
 
-import com.ohgiraffers.timedeal.core.domain.Example;
-import com.ohgiraffers.timedeal.core.domain.product;
-import jakarta.persistence.LockModeType;
+import com.ohgiraffers.timedeal.core.domain.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
-import org.springframework.data.jpa.repository.Query;
 
-import java.util.Optional;
+import java.util.List;
 
-public interface ProductRepository extends JpaRepository<Example, Long> {
+public interface ProductRepository extends JpaRepository<Product, Long> {
+    // 특정 Admin 소유 상품 조회
+    List<Product> findByAdminId(Long adminId);
 }

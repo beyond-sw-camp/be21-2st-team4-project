@@ -3,9 +3,10 @@ package com.ohgiraffers.timedeal.storage;
 import com.ohgiraffers.timedeal.core.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<User,Long> {
+import java.util.Optional;
 
-    Boolean existsByEmailAndPassword(String email, String password);
+public interface UserRepository extends JpaRepository<User,Long> {
+    Optional<User> findByEmailAndPassword(String email, String password);
 
     boolean existsByEmail(String email);
 }

@@ -1,5 +1,16 @@
 package com.ohgiraffers.timedeal.core.api.controller.v1.response;
 
-public record MyPageResponse(String name, int money, int total_saved){
+import io.swagger.v3.oas.annotations.media.Schema;
+
+public record MyPageResponse(
+        @Schema(description = "이름")
+        String name,
+
+        @Schema(description = "가지고 있는 금액")
+        int money,
+
+        @Schema(description = "절약한 총 금액")
+        int total_saved
+){
 
 }

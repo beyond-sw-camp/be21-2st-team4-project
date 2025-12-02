@@ -7,11 +7,13 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "promotions")
@@ -24,7 +26,7 @@ public class Promotion extends BaseEntity {
     private Long productId;
 
     @Column(name = "sale_price")
-    private Double salePrice;
+    private Integer salePrice;
 
     @Column(name = "discount_rate")
     private Double discountRate;
@@ -35,12 +37,6 @@ public class Promotion extends BaseEntity {
     @Column(name = "end_time")
     private LocalDateTime endTime;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
     @Column(name = "total_quantity")
     private Integer totalQuantity;
 
@@ -49,7 +45,20 @@ public class Promotion extends BaseEntity {
 
     @Column(name = "promotion_status")
     @Enumerated(EnumType.STRING)
-    private PromotionStatus promotionStatus = PromotionStatus.ACTIVE;
+    private PromotionStatus promotionStatus;
+
+    public Promotion(Long adminId, Long productId, Double discountRate, LocalDateTime startTime, LocalDateTime endTime, Integer totalQuantity) {
+        this.adminId = adminId;
+        this.productId = productId;
+        this.discountRate = discountRate;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.totalQuantity = totalQuantity;
+    }
+
+    public void changeStatus(PromotionStatus promotionStatus) {
+        this.promotionStatus = promotionStatus;
+    }
 
     public void increaseSoldQuantity() {
         if(this.soldQuantity > this.totalQuantity) {
@@ -57,4 +66,20 @@ public class Promotion extends BaseEntity {
         }
         this.soldQuantity += 1;
     }
+
+    public void updatePromotion(Long adminId,
+                                Long productId,
+                                Double discountRate,
+                                LocalDateTime startTime,
+                                LocalDateTime endTime,
+                                Integer totalQuantity) {
+
+        this.adminId = adminId;
+        this.productId = productId;
+        this.discountRate = discountRate;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.totalQuantity = totalQuantity;
+    }
+
 }
