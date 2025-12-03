@@ -1,14 +1,12 @@
 package com.ohgiraffers.timedeal.core.api.controller.v1;
 
 import com.ohgiraffers.timedeal.core.api.controller.v1.request.ProductRequest;
+import com.ohgiraffers.timedeal.core.api.controller.v1.response.ProductListResponse;
 import com.ohgiraffers.timedeal.core.api.controller.v1.response.ProductResponse;
-import com.ohgiraffers.timedeal.core.api.controller.v1.response.ProductListResponse; // 💡 FIX 1: ProductListResponse 임포트 추가
 import com.ohgiraffers.timedeal.core.domain.ProductService;
 import com.ohgiraffers.timedeal.core.support.response.ApiResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

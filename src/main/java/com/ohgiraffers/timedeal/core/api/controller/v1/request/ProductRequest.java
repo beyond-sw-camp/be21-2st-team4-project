@@ -11,6 +11,6 @@ public class ProductRequest {
     private String description;
     private Integer price;
     private String imageUrl;
-    private String category;
+    private Long categoryId;
     private Long adminId;
 }

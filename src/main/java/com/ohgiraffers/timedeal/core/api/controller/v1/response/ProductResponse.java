@@ -8,7 +8,7 @@ public record ProductResponse(
         String description,
         Integer price,
         String imageUrl,
-        String category,
+        Long categoryId,
         Long adminId
 ) {
     public static ProductResponse from(Product product) {
@@ -18,8 +18,8 @@ public record ProductResponse(
                 product.getDescription(),
                 product.getPrice(),
                 product.getImageUrl(),
-                product.getCategory(),
-                product.getAdminId()
+                product.getCategory() != null ? product.getCategory().getId() : null,
+                product.getAdmin() != null ? product.getAdmin().getId() : null
         );
     }
 }
