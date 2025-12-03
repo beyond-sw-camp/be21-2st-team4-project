@@ -141,7 +141,7 @@ public class QueueIntegrationTest extends IntegrationTestBase {
             }
 
             // when
-            queueScheduler.runWaitQueue();
+            queueScheduler.scheduled();
 
             // then
             assertThat(zSetOps.size(waitQueueKey)).isEqualTo(5);
@@ -159,7 +159,7 @@ public class QueueIntegrationTest extends IntegrationTestBase {
             zSetOps.add(proceedQueueKey, "user:2", System.currentTimeMillis() + 300000);
 
             // when
-            queueScheduler.runWaitQueue();
+            queueScheduler.scheduled();
 
             // then
             assertThat(zSetOps.score(proceedQueueKey, "user:1")).isNull();

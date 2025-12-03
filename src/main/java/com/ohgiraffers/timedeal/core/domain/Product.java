@@ -24,13 +24,12 @@ public class Product extends BaseEntity {
     private Integer price;
 
     @Column(name = "category", length = 255, nullable = false)
-    private String category;
+    private String category; // Category 객체 대신 String category 유지
 
     @Column(name = "admin_id", nullable = false)
-    private Long adminId; // FIX: ManyToOne 연관 관계를 제거하고 Long 타입의 adminId 필드 사용
+    private Long adminId;
 
-    // 생성자 (등록 시 사용)
-    public Product(String name, String description, String imageUrl, Integer price, String category, Long adminId) { // FIX: Admin -> Long adminId로 변경
+    public Product(String name, String description, String imageUrl, Integer price, String category, Long adminId) {
         this.name = name;
         this.description = description;
         this.imageUrl = imageUrl;
@@ -39,8 +38,7 @@ public class Product extends BaseEntity {
         this.adminId = adminId;
     }
 
-    // 수정 메서드
-    public void update(String name, String description, Integer price, String imageUrl, String category, Long adminId) { // FIX: Admin -> Long adminId로 변경
+    public void update(String name, String description, Integer price, String imageUrl, String category, Long adminId) {
         this.name = name;
         this.description = description;
         this.price = price;

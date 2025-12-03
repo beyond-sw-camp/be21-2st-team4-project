@@ -5,8 +5,18 @@ import org.springframework.http.HttpStatus;
 
 public enum ErrorType {
 
+    // COMMON ERROR
     DEFAULT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.E500, "An unexpected error has occurred.", LogLevel.ERROR),
-    DEFAULT_ARGUMENT_NOT_VALID(HttpStatus.BAD_REQUEST, ErrorCode.E400, "An unexpected error has occurred.", LogLevel.WARN);
+    DEFAULT_ARGUMENT_NOT_VALID(HttpStatus.BAD_REQUEST, ErrorCode.E400, "An unexpected error has occurred.", LogLevel.WARN),
+
+    // REDIS ERROR
+    REDIS_CONN_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.REDIS_ERROR, "REDIS ERROR.", LogLevel.ERROR),
+
+    // QUEUE ERROR
+    QUEUE_NOT_FOUND(HttpStatus.NOT_FOUND, ErrorCode.QUEUE_NOT_FOUND, "대기열이 존재하지 않습니다.", LogLevel.WARN),
+    QUEUE_EXPIRED(HttpStatus.GONE, ErrorCode.QUEUE_EXPIRED, "진행큐에 기간이 만료되었습니다.", LogLevel.WARN),
+
+    MAX_ERROR(null, null, null, null);
 
     private final HttpStatus status;
 

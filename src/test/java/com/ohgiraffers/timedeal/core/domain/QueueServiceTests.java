@@ -2,6 +2,8 @@ package com.ohgiraffers.timedeal.core.domain;
 
 import com.ohgiraffers.timedeal.core.api.controller.v1.response.QueueResponse;
 import com.ohgiraffers.timedeal.core.enums.QueueStatus;
+import com.ohgiraffers.timedeal.core.support.error.CoreException;
+import com.ohgiraffers.timedeal.core.support.key.TimedealKeys;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,7 +14,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 
+import java.util.Set;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -121,7 +126,7 @@ class QueueServiceTests {
         given(zSetOps.rank(anyString(), anyString())).willReturn(5L);
 
         // when
-        QueueResponse response = queueService.getQueue(1L, 100L);
+        QueueResponse response = queueService.getQueueStatus(1L, 100L);
 
         // then
         assertThat(response).isNotNull();
@@ -137,7 +142,7 @@ class QueueServiceTests {
         given(zSetOps.score(anyString(), anyString())).willReturn((double) System.currentTimeMillis() + 60000);
 
         // when
-        QueueResponse response = queueService.getQueue(1L, 100L);
+        QueueResponse response = queueService.getQueueStatus(1L, 100L);
 
         // then
         assertThat(response).isNotNull();
@@ -153,10 +158,89 @@ class QueueServiceTests {
         given(zSetOps.score(anyString(), anyString())).willReturn(null);
 
         // when
-        QueueResponse response = queueService.getQueue(1L, 100L);
+        QueueResponse response = queueService.getQueueStatus(1L, 100L);
 
         // then
         assertThat(response).isNotNull();
         assertThat(response.status()).isEqualTo(QueueStatus.EXPIRED);
+    }
+
+    @Test
+    @DisplayName("대기열에 진입 후 나간다면 대기열에서 삭제")
+    void leaveWaitQueue() {
+        // given
+        Long dealId = 1L;
+        Long userId = 100L;
+
+        String userStr = "user:" + userId;
+        String waitQueueKey = TimedealKeys.waitQueue(dealId);
+
+        given(stringRedisTemplate.opsForZSet()).willReturn(zSetOps);
+        given(zSetOps.add(anyString(), any(), anyDouble())).willReturn(true);
+        given(zSetOps.rank(anyString(), any())).willReturn(0L);
+        given(zSetOps.remove(anyString(), any())).willReturn(1L);
+
+        // when
+        queueService.enterQueue(dealId, userId);
+        queueService.leaveQueue(dealId, userId);
+
+        // then
+        verify(zSetOps).remove(eq(waitQueueKey), eq(userStr));
+    }
+
+    @Test
+    @DisplayName("특정 진행큐에 존재하는지 확인")
+    void verifyQueue() {
+        // given
+        Long dealId = 1L;
+        Long userId = 100L;
+
+        String userStr = "user:" + userId;
+        String proceedQueueKey = TimedealKeys.proceedQueue(dealId);
+
+        double expireAt = System.currentTimeMillis() + 5 * 60 * 1000;
+
+        given(stringRedisTemplate.opsForZSet()).willReturn(zSetOps);
+        given(zSetOps.score(proceedQueueKey, userStr)).willReturn(expireAt);
+
+        // when & then
+        assertThatCode(() -> queueService.verifyQueue(dealId, userId)).doesNotThrowAnyException();
+
+    }
+
+    @Test
+    @DisplayName("진행큐에 존재하지 않으면 예외 발생")
+    void verifyQueue_NotExist() {
+        // given
+        Long dealId = 1L;
+        Long userId = 100L;
+
+        String userStr = "user:" + userId;
+        String proceedQueueKey = TimedealKeys.proceedQueue(dealId);
+
+        given(stringRedisTemplate.opsForZSet()).willReturn(zSetOps);
+        given(zSetOps.score(proceedQueueKey, userStr)).willReturn(null);
+
+        // when & then
+        assertThatCode(() -> queueService.verifyQueue(dealId, userId)).isInstanceOf(CoreException.class);
+    }
+
+    @Test
+    @DisplayName("진행큐에 존재는 헀지만 만료시간이 끝난경우 실패")
+    void verifyQueue_Expire() {
+        // given
+        Long dealId = 1L;
+        Long userId = 100L;
+
+        String userStr = "user:" + userId;
+        String proceedQueueKey = TimedealKeys.proceedQueue(dealId);
+
+        double expireAt = System.currentTimeMillis() - 5 * 60 * 1000;
+
+        given(stringRedisTemplate.opsForZSet()).willReturn(zSetOps);
+        given(zSetOps.score(proceedQueueKey, userStr)).willReturn(expireAt);
+
+        // when & then
+        assertThatCode(() -> queueService.verifyQueue(dealId, userId)).isInstanceOf(CoreException.class);
     }
 }
