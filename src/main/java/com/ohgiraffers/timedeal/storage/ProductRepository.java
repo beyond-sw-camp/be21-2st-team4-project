@@ -10,11 +10,12 @@ import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    List<Product> findByAdminId(Long adminId);
+    @Query("SELECT p FROM Product p JOIN FETCH p.category WHERE p.admin.id = :adminId")
+    List<Product> findByAdminIdWithCategory(Long adminId);
+
     @Query("SELECT p FROM Product p JOIN FETCH p.category")
     List<Product> findAllWithCategory();
+
     @Query("SELECT p FROM Product p JOIN FETCH p.category WHERE p.id = :productId")
-    Optional<Product> findByIdWithCategory(@Param("productId") Long productId);
-    @Query("SELECT p FROM Product p JOIN FETCH p.category WHERE p.adminId = :adminId")
-    List<Product> findByAdminIdWithCategory(@Param("adminId") Long adminId);
+    Optional<Product> findByIdWithCategory(Long productId);
 }

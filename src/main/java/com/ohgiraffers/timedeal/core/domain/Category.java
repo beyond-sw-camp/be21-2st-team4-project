@@ -1,30 +1,33 @@
 package com.ohgiraffers.timedeal.core.domain;
 
+import com.ohgiraffers.timedeal.core.enums.EntityStatus;
 import com.ohgiraffers.timedeal.storage.BaseEntity;
-import jakarta.persistence.*;
-import lombok.AccessLevel;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-// 💡 생성자 주입 및 Lombok 사용을 위해 AccessLevel.PROTECTED 설정
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(
-        name = "category",
-        indexes = {
-                // 💡 FIX: name 필드에 고유 인덱스 설정 (Example 양식 참고)
-                @Index(name = "idx_category_name", columnList = "name", unique = true)
-        }
-)
+@NoArgsConstructor
+@Table(name = "category")
 public class Category extends BaseEntity {
 
-    // 💡 FIX: category_name이 아닌 name 필드 사용
-    @Column(name = "name", nullable = false)
+    @Column(nullable = false, length = 255, unique = true)
     private String name;
 
-    // 카테고리 생성자 (name만 받음)
     public Category(String name) {
         this.name = name;
     }
+
+    public void update(String name) {
+        this.name = name;
+    }
+
+    public void changeStatus(EntityStatus status) {
+        super.deleted();
+        this.active();
+    }
+
 }

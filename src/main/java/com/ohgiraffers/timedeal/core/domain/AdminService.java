@@ -51,7 +51,6 @@ public class AdminService {
     // 관리자 삭제
     @Transactional
     public void deleteAdmin(Long adminId) {
-        // FIX: 불필요한 조회 없이 deleteById 사용
         adminRepository.deleteById(adminId);
     }
 }

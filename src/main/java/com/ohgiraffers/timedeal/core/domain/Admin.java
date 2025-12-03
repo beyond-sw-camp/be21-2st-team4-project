@@ -14,13 +14,13 @@ import java.util.List;
 @Table(name = "admins")
 public class Admin extends BaseEntity {
 
-    @Column(name="email", nullable = false, unique = true, length = 10)
+    @Column(name="email", nullable = false, unique = true, length = 100)
     private String email;
 
-    @Column(name="password", nullable = false, length = 10)
+    @Column(name="password", nullable = false, length = 250)
     private String password;
 
-    @Column(name="company", nullable = false, length = 10)
+    @Column(name="company", nullable = false, length = 100)
     private String company;
 
     // 생성자 (등록 시 사용)

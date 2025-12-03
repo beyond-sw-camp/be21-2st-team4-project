@@ -23,22 +23,24 @@ public class Product extends BaseEntity {
     @Column(name = "price", nullable = false)
     private Integer price;
 
-    @Column(name = "category", length = 255, nullable = false)
-    private String category; // Category 객체 대신 String category 유지
+    @ManyToOne(fetch = FetchType.LAZY)   // FK 매핑
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
 
-    @Column(name = "admin_id", nullable = false)
-    private Long adminId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "admin_id", nullable = false)
+    private Admin admin;
 
-    public Product(String name, String description, String imageUrl, Integer price, String category, Long adminId) {
+    public Product(String name, String description, String imageUrl, Integer price, Category category, Admin admin) {
         this.name = name;
         this.description = description;
         this.imageUrl = imageUrl;
         this.price = price;
         this.category = category;
-        this.adminId = adminId;
+        this.admin = admin;
     }
 
-    public void update(String name, String description, Integer price, String imageUrl, String category, Long adminId) {
+    public void update(String name, String description, Integer price, String imageUrl, Category category, Admin admin) {
         this.name = name;
         this.description = description;
         this.price = price;
@@ -46,6 +48,6 @@ public class Product extends BaseEntity {
             this.imageUrl = imageUrl;
         }
         this.category = category;
-        this.adminId = adminId;
+        this.admin = admin;
     }
 }

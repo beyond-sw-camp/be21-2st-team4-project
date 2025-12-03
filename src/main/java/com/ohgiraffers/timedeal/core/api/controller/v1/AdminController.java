@@ -1,11 +1,9 @@
 package com.ohgiraffers.timedeal.core.api.controller.v1;
 
-// ... (imports)
 import com.ohgiraffers.timedeal.core.api.controller.v1.request.AdminRequest;
 import com.ohgiraffers.timedeal.core.api.controller.v1.request.ProductRequest;
 import com.ohgiraffers.timedeal.core.api.controller.v1.response.AdminResponse;
 import com.ohgiraffers.timedeal.core.api.controller.v1.response.ProductResponse;
-// 💡 FIX: ProductListResponse 임포트 추가
 import com.ohgiraffers.timedeal.core.api.controller.v1.response.ProductListResponse;
 import com.ohgiraffers.timedeal.core.domain.AdminService;
 import com.ohgiraffers.timedeal.core.domain.ProductService;
@@ -28,7 +26,6 @@ public class AdminController {
 
     // 2. 관리자별 상품 조회
     @GetMapping("/api/v1/admins/{adminId}/products")
-    // ProductListResponse 타입 사용
     public ApiResult<ProductListResponse> findProductsByAdmin(@PathVariable Long adminId) {
         return ApiResult.success(productService.findByAdminId(adminId));
     }
@@ -43,7 +40,6 @@ public class AdminController {
 
     // 4. 관리자 권한으로 상품 삭제
     @DeleteMapping("/api/v1/admins/{adminId}/products/{productId}")
-    // ApiResult<?> 사용
     public ApiResult<?> deleteProductByAdmin(@PathVariable Long adminId,
                                              @PathVariable Long productId) {
         productService.deleteProductByAdmin(adminId, productId);
