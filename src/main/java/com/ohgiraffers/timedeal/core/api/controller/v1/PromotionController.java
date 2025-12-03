@@ -47,14 +47,20 @@ public class PromotionController {
         promotionService.deletePromotion(id);
         return ApiResult.success();
     }
-    @GetMapping("api/v1/promotions")
+    @GetMapping("/api/v1/promotions")
     public ApiResult<List<PromotionResponse>> getAllPromotion() {
         return ApiResult.success(promotionService.findAll());
     }
-    @GetMapping("api/v1/promtions/{promotionStatus}")
+    @GetMapping("/api/v1/promtions/{promotionStatus}")
     public ApiResult<List<PromotionResponse>> getPromotionsStatusAll(
             @PathVariable PromotionStatus promotionStatus)
     {
         return ApiResult.success(promotionService.getPromotionsByStatus(promotionStatus));
+    }
+    @GetMapping("/api/v1/promotions/{id}")
+    public ApiResult<Promotion> findPromotionById(
+            @PathVariable long id
+    ) {
+        return ApiResult.success(promotionService.findPromotionById(id));
     }
 }

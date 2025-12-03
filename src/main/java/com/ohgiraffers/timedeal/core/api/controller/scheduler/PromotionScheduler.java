@@ -20,37 +20,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PromotionScheduler {
     private final StringRedisTemplate stringRedisTemplate;
-    PromotionService promotionService;
+    private final PromotionService promotionService;
     @Scheduled(fixedRate = 60000)
     public void checkpromotion() {
-        List<RedisPromotionResponse> schedulePromotion = promotionService.returnSchedule();
-        List<RedisPromotionResponse> activePromotion = promotionService.returnActive();
-        String setPromtion = TimedealKeys.setPromotion(schedulePromotion.get(0));
-        String deletePromtion = TimedealKeys.deletePromotion(activePromotion.get(0));
-        switch(promotion.getPromotionStatus()) {
-            case SCHEDULER :
-                if(promotion.getStartTime().isAfter(LocalDateTime.now())){
-                    promotion.changeStatus(PromotionStatus.ACTIVE);
-                    savePromotion(promotion.getId(),promotion.getTotalQuantity());
-                }
-                break;
-            case ACTIVE :
-                if(promotion.getEndTime().isAfter(LocalDateTime.now())){
-                    promotion.changeStatus(PromotionStatus.ENDED);
-                    deletePromotion(promotion.getId());
-                }
-                break;
+        List<RedisPromotionResponse> schedulePromotion =  promotionService.returnSchedule(PromotionStatus.SCHEDULER);
+        List<RedisPromotionResponse> activePromotion = promotionService.returnActive(PromotionStatus.SCHEDULER);
+        for(RedisPromotionResponse promotion : schedulePromotion){
+            String key = TimedealKeys.setPromotion(promotion.timedealId());
+            Integer value = promotion.totalQuantity();
+            stringRedisTemplate.opsForValue().set(key, String.valueOf(value));
         }
-    }
-
-    public void savePromotion(Long timedealId, int totalQuantity) {
-        String key = TimedealKeys.setPromotion(timedealId);
-        stringRedisTemplate.opsForValue().set(key, String.valueOf(totalQuantity));
-    }
-
-    public void deletePromotion(Long timedealId) {
-        String key = TimedealKeys.deletePromotion(timedealId);
-        stringRedisTemplate.delete(key);
+        for(RedisPromotionResponse promotion : activePromotion){
+            String key = TimedealKeys.setPromotion(promotion.timedealId());
+            stringRedisTemplate.delete(key);
+        }
     }
 
 }

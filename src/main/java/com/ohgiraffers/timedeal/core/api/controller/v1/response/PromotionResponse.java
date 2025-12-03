@@ -19,7 +19,10 @@ public record PromotionResponse (
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime startTime,
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-        LocalDateTime endTime
+        LocalDateTime endTime,
+        String productName,
+        String productImage,
+        Integer originalPrice
         ){
 
 }

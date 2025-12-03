@@ -47,6 +47,7 @@ public class Promotion extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private PromotionStatus promotionStatus;
 
+
     public Promotion(Long adminId, Long productId, Double discountRate, LocalDateTime startTime, LocalDateTime endTime, Integer totalQuantity) {
         this.adminId = adminId;
         this.productId = productId;
