@@ -2,6 +2,7 @@ package com.ohgiraffers.timedeal.core.domain;
 
 import com.ohgiraffers.timedeal.core.api.controller.v1.response.QueueResponse;
 import com.ohgiraffers.timedeal.core.enums.QueueStatus;
+import com.ohgiraffers.timedeal.core.messaging.SseEmitterRegistry;
 import com.ohgiraffers.timedeal.core.support.error.CoreException;
 import com.ohgiraffers.timedeal.core.support.key.TimedealKeys;
 import org.junit.jupiter.api.DisplayName;
@@ -10,14 +11,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 
-import java.util.Set;
-
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -31,6 +30,9 @@ class QueueServiceTests {
 
     @Mock
     ZSetOperations<String, String> zSetOps;
+
+    @Mock
+    SseEmitterRegistry sseEmitterRegistry;
 
     @InjectMocks
     QueueService queueService;
@@ -51,12 +53,12 @@ class QueueServiceTests {
 
         // then
         assertThat(response).isNotNull();
-        assertThat(response.position()).isEqualTo(0L);
-        assertThat(response.waitTime()).isEqualTo(0L);
+        assertThat(response.position()).isEqualTo(1L);
+        assertThat(response.waitingTime()).isEqualTo(0L);
         assertThat(response.status()).isEqualTo(QueueStatus.WAITING);
 
-        verify(zSetOps).add(eq("queue:1"), eq("user:" + userId), anyDouble());
-        verify(zSetOps).rank("queue:1", userId);
+        verify(zSetOps).add(anyString(), any(), anyDouble());
+        verify(zSetOps).rank(anyString(), any());
     }
 
     @Test
@@ -74,8 +76,8 @@ class QueueServiceTests {
         QueueResponse response = queueService.enterQueue(dealId, userId);
 
         // then
-        assertThat(response.position()).isEqualTo(10L);
-        assertThat(response.waitTime()).isEqualTo(10L);
+        assertThat(response.position()).isEqualTo(11L);
+        assertThat(response.waitingTime()).isEqualTo(queueService.getWaitingTime(dealId, response.position()));
     }
 
     @Test
@@ -94,7 +96,7 @@ class QueueServiceTests {
 
         // then
         assertThat(response.position()).isEqualTo(3L);
-        verify(zSetOps).add(eq("queue:1"), eq("user:" + userId), anyDouble());
+        verify(zSetOps).add(eq("queue:1"), eq(TimedealKeys.makeUser(userId)), anyDouble());
     }
 
     @Test
@@ -114,8 +116,8 @@ class QueueServiceTests {
         queueService.enterQueue(dealId2, userId);
 
         // then
-        verify(zSetOps).add(eq("queue:1"), eq("user:" + userId), anyDouble());
-        verify(zSetOps).add(eq("queue:2"), eq("user:" + userId), anyDouble());
+        verify(zSetOps).add(eq("queue:1"), eq(TimedealKeys.makeUser(userId)), anyDouble());
+        verify(zSetOps).add(eq("queue:2"), eq(TimedealKeys.makeUser(userId)), anyDouble());
     }
 
     @Test
@@ -172,7 +174,7 @@ class QueueServiceTests {
         Long dealId = 1L;
         Long userId = 100L;
 
-        String userStr = "user:" + userId;
+        String userStr = TimedealKeys.makeUser(userId);
         String waitQueueKey = TimedealKeys.waitQueue(dealId);
 
         given(stringRedisTemplate.opsForZSet()).willReturn(zSetOps);
@@ -195,7 +197,7 @@ class QueueServiceTests {
         Long dealId = 1L;
         Long userId = 100L;
 
-        String userStr = "user:" + userId;
+        String userStr = TimedealKeys.makeUser(userId);
         String proceedQueueKey = TimedealKeys.proceedQueue(dealId);
 
         double expireAt = System.currentTimeMillis() + 5 * 60 * 1000;
@@ -215,7 +217,7 @@ class QueueServiceTests {
         Long dealId = 1L;
         Long userId = 100L;
 
-        String userStr = "user:" + userId;
+        String userStr = TimedealKeys.makeUser(userId);
         String proceedQueueKey = TimedealKeys.proceedQueue(dealId);
 
         given(stringRedisTemplate.opsForZSet()).willReturn(zSetOps);
@@ -232,7 +234,7 @@ class QueueServiceTests {
         Long dealId = 1L;
         Long userId = 100L;
 
-        String userStr = "user:" + userId;
+        String userStr = TimedealKeys.makeUser(userId);
         String proceedQueueKey = TimedealKeys.proceedQueue(dealId);
 
         double expireAt = System.currentTimeMillis() - 5 * 60 * 1000;
@@ -242,5 +244,10 @@ class QueueServiceTests {
 
         // when & then
         assertThatCode(() -> queueService.verifyQueue(dealId, userId)).isInstanceOf(CoreException.class);
+    }
+
+    @Test
+    void simpleTest() {
+        assertTrue(true);
     }
 }

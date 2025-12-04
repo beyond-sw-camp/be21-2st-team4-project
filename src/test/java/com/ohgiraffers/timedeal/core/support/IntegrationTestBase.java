@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
@@ -11,11 +12,11 @@ import org.springframework.test.context.ActiveProfiles;
 public abstract class IntegrationTestBase {
 
     @Autowired
-    protected RedisTemplate<String, Object> redisTemplate;
+    protected StringRedisTemplate stringRedisTemplate;
 
     @BeforeEach
     void setUpBase() {
-        redisTemplate.getConnectionFactory()
+        stringRedisTemplate.getConnectionFactory()
                 .getConnection()
                 .serverCommands()
                 .flushDb();

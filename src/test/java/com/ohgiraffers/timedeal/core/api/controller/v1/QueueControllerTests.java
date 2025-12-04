@@ -3,6 +3,7 @@ package com.ohgiraffers.timedeal.core.api.controller.v1;
 import com.ohgiraffers.timedeal.core.api.controller.v1.response.QueueResponse;
 import com.ohgiraffers.timedeal.core.domain.QueueService;
 import com.ohgiraffers.timedeal.core.enums.QueueStatus;
+import com.ohgiraffers.timedeal.core.support.constants.QueueConstants;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -41,18 +43,23 @@ class QueueControllerTests {
             // given
             Long dealId = 1L;
             Long userId = 100L;
-            QueueResponse queueResponse = new QueueResponse(0L, 0L, QueueStatus.WAITING);
+            QueueResponse queueResponse = new QueueResponse(1L, 0L, QueueStatus.WAITING);
 
             given(queueService.enterQueue(dealId, userId)).willReturn(queueResponse);
 
             // when & then
             mockMvc.perform(post("/api/v1/queue")
-                            .param("dealId", dealId.toString())
-                            .param("userId", userId.toString()))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("""
+                                    {
+                                        "timedealId": 1,
+                                        "userId": 100
+                                    }
+                                    """))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.result").value("SUCCESS"))
-                    .andExpect(jsonPath("$.data.position").value(0))
-                    .andExpect(jsonPath("$.data.waitTime").value(0))
+                    .andExpect(jsonPath("$.data.position").value(1L))
+                    .andExpect(jsonPath("$.data.waitingTime").value(0L))
                     .andExpect(jsonPath("$.data.status").value("WAITING"));
         }
 
@@ -68,12 +75,17 @@ class QueueControllerTests {
 
             // when & then
             mockMvc.perform(post("/api/v1/queue")
-                            .param("dealId", dealId.toString())
-                            .param("userId", userId.toString()))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("""
+                                    {
+                                        "timedealId": 1,
+                                        "userId": 100
+                                    }
+                                    """))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.result").value("SUCCESS"))
                     .andExpect(jsonPath("$.data.position").value(5))
-                    .andExpect(jsonPath("$.data.waitTime").value(50))
+                    .andExpect(jsonPath("$.data.waitingTime").value(50))
                     .andExpect(jsonPath("$.data.status").value("WAITING"));
         }
 
@@ -82,7 +94,12 @@ class QueueControllerTests {
         void enterQueueWithoutUserId() throws Exception {
             // when & then
             mockMvc.perform(post("/api/v1/queue")
-                            .param("dealId", "1"))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("""
+                                    {
+                                        "userId": 1
+                                    }
+                                    """))
                     .andExpect(status().isBadRequest());
         }
 
@@ -91,7 +108,12 @@ class QueueControllerTests {
         void enterQueueWithoutDealId() throws Exception {
             // when & then
             mockMvc.perform(post("/api/v1/queue")
-                            .param("userId", "1"))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("""
+                                    {
+                                        "timedealId": 1
+                                    }
+                                    """))
                     .andExpect(status().isBadRequest());
         }
     }
