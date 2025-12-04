@@ -59,7 +59,7 @@ public interface PromotionRepository extends JpaRepository<Promotion,Long> {
     pm.id
         ,pm.adminId
         ,pm.productId
-        ,null
+        ,pm.salePrice
         ,pm.discountRate
         ,pm.totalQuantity
         ,pm.startTime
