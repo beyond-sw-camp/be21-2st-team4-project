@@ -37,13 +37,18 @@ public class OrderDetail extends BaseEntity {
     private String imageUrl;
 
 
-    public static OrderDetail of(Long orderId, Long promotionId, Integer quantity, Integer unitPrice) {
+    public static OrderDetail of(Long orderId, Long promotionId
+            , Integer quantity, Integer unitPrice
+            ,String promotionName
+            , String imageUrl) {
         OrderDetail detail = new OrderDetail();
         detail.orderId = orderId;
         detail.promotionId = promotionId;
         detail.quantity = quantity;
         detail.unitPrice = unitPrice.doubleValue();
         detail.subtotal = unitPrice* quantity;
+        detail.promotionName = promotionName;
+        detail.imageUrl = imageUrl;
         return detail;
     }
 

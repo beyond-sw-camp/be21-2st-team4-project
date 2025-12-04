@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ohgiraffers.timedeal.core.messaging.QueueStatusSubscriber;
 import com.ohgiraffers.timedeal.core.support.key.TimedealChannels;
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -71,5 +74,13 @@ public class RedisConfig {
     @Bean
     public MessageListenerAdapter listenerAdapterQueueMessage(QueueStatusSubscriber subscriber) {
         return new MessageListenerAdapter(subscriber, "onMessage");
+    }
+
+    @Bean
+    public RedissonClient redissonClient() {
+        Config config = new Config();
+        config.useSingleServer()
+                .setAddress("redis://localhost:6379");
+        return Redisson.create(config);
     }
 }
