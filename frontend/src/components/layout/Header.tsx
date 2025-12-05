@@ -6,7 +6,7 @@ export interface HeaderProps {
   user?: {
     id: number;
     name: string;
-    balance: number;
+    money: number;  // 백엔드 스펙: balance → money
   } | null;
   onLogout?: () => void;
 }
@@ -32,12 +32,20 @@ export const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
               타임딜
             </Link>
             {user && (
-              <Link
-                to="/me"
-                className="text-text-secondary hover:text-sale-red transition-colors font-medium"
-              >
-                마이페이지
-              </Link>
+              <>
+                <Link
+                  to="/orders"
+                  className="text-text-secondary hover:text-sale-red transition-colors font-medium"
+                >
+                  주문내역
+                </Link>
+                <Link
+                  to="/me"
+                  className="text-text-secondary hover:text-sale-red transition-colors font-medium"
+                >
+                  마이페이지
+                </Link>
+              </>
             )}
           </nav>
 
@@ -50,7 +58,7 @@ export const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
                     {user.name}님
                   </span>
                   <span className="text-sm font-bold text-primary-blue">
-                    {user.balance.toLocaleString()}원
+                    {user.money.toLocaleString()}원
                   </span>
                 </div>
                 <Button size="sm" variant="outline" onClick={onLogout}>
