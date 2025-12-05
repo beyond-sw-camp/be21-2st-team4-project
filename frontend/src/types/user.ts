@@ -1,9 +1,9 @@
-// User Types
+// User Types (백엔드 API 스펙 기준)
 export interface User {
   id: number;
   email: string;
   name: string;
-  balance: number;
+  money: number;  // 백엔드는 'money' 사용 (balance 아님)
   createdAt: string;
   updatedAt: string;
 }
@@ -20,5 +20,13 @@ export interface SignUpRequest {
 }
 
 export interface SignInResponse {
-  token: string;  // 백엔드는 token만 반환
+  userId: number;  // 백엔드에서 사용자 ID 반환
+  token: string;
+}
+
+// 백엔드 MyPageResponse (GET /api/v1/users/me)
+export interface MyPageResponse {
+  name: string;
+  money: number;
+  total_saved: number;  // 백엔드는 snake_case 사용
 }
