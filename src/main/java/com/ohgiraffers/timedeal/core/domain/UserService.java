@@ -12,6 +12,7 @@ import com.ohgiraffers.timedeal.storage.OrderRepository;
 import com.ohgiraffers.timedeal.storage.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -25,7 +26,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final OrderRepository orderRepository;
     private final OrderDetailRepository orderDetailRepository;
-    private final RedisTemplate<String, String> redisTemplate;
+    private final StringRedisTemplate redisTemplate;
 
     //로그인
     public SignInResponse signIn(String email, String password) {
@@ -33,7 +34,7 @@ public class UserService {
                 .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
         String token = UUID.randomUUID().toString();
         saveToken(user.getId(),token,3600);
-        return new SignInResponse(token);
+        return new SignInResponse(user.getId(),token);
 
     }
 
@@ -51,6 +52,15 @@ public class UserService {
     // 토큰 조회
     public String getToken(Long userId) {
         return redisTemplate.opsForValue().get("UserToken:" + userId);
+    }
+
+    public Boolean verifyToken(Long userId, String token) {
+        String getToken = redisTemplate.opsForValue().get("UserToken:" + userId);
+        if(getToken!= null && getToken.equals(token)){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     // 로그아웃 시 토큰 삭제

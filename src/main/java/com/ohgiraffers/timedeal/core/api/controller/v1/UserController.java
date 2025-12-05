@@ -59,6 +59,22 @@ public class UserController {
         return ApiResult.success();
     }
 
+    @Operation(
+            summary = "토큰값 인증",
+            description = "아이디와 토큰값으로 인증"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "토큰 인증 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청 (토큰 형식 오류 등)"),
+            @ApiResponse(responseCode = "401", description = "토큰 불일치 또는 만료된 토큰"),
+            @ApiResponse(responseCode = "404", description = "해당 유저를 찾을 수 없음")
+    })
+    @GetMapping("/api/v1/users/verify")
+    public ApiResult<Boolean> verifyToken(@RequestBody SignInResponse signInResponse){
+        return ApiResult.success(userService.verifyToken(signInResponse.userId(), signInResponse.token()));
+    }
+
+
     @Operation(summary = "마이페이지 조회", description = "유저의 마이페이지 정보를 조회")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공"),
