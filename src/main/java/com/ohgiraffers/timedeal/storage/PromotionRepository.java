@@ -70,7 +70,7 @@ public interface PromotionRepository extends JpaRepository<Promotion,Long> {
         ,pd.price
         ,pm.promotionStatus)
     from Promotion pm
-    join Product pd
+    join Product pd on pm.productId = pd.id
 """)
     List<PromotionResponse> findAllPromotions();
 
