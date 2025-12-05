@@ -91,14 +91,13 @@ public class PromotionService {
                         p.salePrice(),
                         p.discountRate(),
                         p.totalQuantity(),
+                        p.soldQuantity(),
                         p.startTime(),
                         p.endTime(),
                         p.productName(),
                         p.productImage(),
                         p.originalPrice(),
-                        p.promotionStatus()  // promotionStatus 추가
-
-
+                        p.promotionStatus()
                 ))
                 .toList();
 
@@ -113,12 +112,13 @@ public class PromotionService {
                 p.salePrice(),
                 p.discountRate(),
                 p.totalQuantity(),
+                p.soldQuantity(),
                 p.startTime(),
                 p.endTime(),
                 p.productName(),
                 p.productImage(),
                 p.originalPrice(),
-                p.promotionStatus()  // promotionStatus 추가
+                p.promotionStatus()
         ))
                 .toList();
 

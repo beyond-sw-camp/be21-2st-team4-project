@@ -33,6 +33,7 @@ public interface PromotionRepository extends JpaRepository<Promotion,Long> {
         ,pm.salePrice
         ,pm.discountRate
         ,pm.totalQuantity
+        ,pm.soldQuantity
         ,pm.startTime
         ,pm.endTime
         ,pd.name
@@ -63,6 +64,7 @@ public interface PromotionRepository extends JpaRepository<Promotion,Long> {
         ,pm.salePrice
         ,pm.discountRate
         ,pm.totalQuantity
+        ,pm.soldQuantity
         ,pm.startTime
         ,pm.endTime
         ,pd.name

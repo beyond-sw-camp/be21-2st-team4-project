@@ -15,9 +15,7 @@ export interface Promotion {
 
   // 백엔드에서 제공
   promotionStatus: PromotionStatus;
-
-  // 프론트엔드 전용 (계산 또는 임시)
-  soldQuantity?: number;    // 백엔드에서 제공 안함 - 필요시 별도 API
+  soldQuantity: number;
 }
 
 // 백엔드 Enum: SCHEDULER, ACTIVE, ENDED

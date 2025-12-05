@@ -16,8 +16,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ promotion }) => {
     return null;
   }
 
-  // 백엔드에서 상품 정보를 제공하지 않으므로 기본값 사용
-  const soldQuantity = promotion.soldQuantity || 0;
+  // 백엔드에서 soldQuantity 제공
+  const soldQuantity = promotion.soldQuantity;
   const remainingQuantity = promotion.totalQuantity - soldQuantity;
   const isSoldOut = remainingQuantity === 0;
   const stockPercentage = (remainingQuantity / promotion.totalQuantity) * 100;
