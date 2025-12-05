@@ -11,6 +11,11 @@ export interface ProductCardProps {
 export const ProductCard: React.FC<ProductCardProps> = ({ promotion }) => {
   const navigate = useNavigate();
 
+  // ENDED 상태 프로모션은 렌더링하지 않음
+  if (promotion.promotionStatus === 'ENDED') {
+    return null;
+  }
+
   // 백엔드에서 상품 정보를 제공하지 않으므로 기본값 사용
   const soldQuantity = promotion.soldQuantity || 0;
   const remainingQuantity = promotion.totalQuantity - soldQuantity;
@@ -24,8 +29,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ promotion }) => {
   const originalPrice = promotion.originalPrice || 0;
   const salePrice = promotion.salePrice || Math.round(originalPrice * (1 - promotion.discountRate / 100));
 
+  // 상태별 타이머 시간 결정
+  const timerEndTime = promotion.promotionStatus === 'SCHEDULER'
+    ? promotion.startTime  // SCHEDULER: 시작까지 남은 시간
+    : promotion.endTime;    // ACTIVE: 끝까지 남은 시간
+
   const handleClick = () => {
-    if (!isSoldOut) {
+    if (!isSoldOut && promotion.promotionStatus !== 'SCHEDULER') {
       navigate(`/promotions/${promotion.id}`);
     }
   };
@@ -52,9 +62,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ promotion }) => {
         )}
 
         {/* Timer Overlay (shown on hover) */}
-        {!isSoldOut && (
+        {!isSoldOut && promotion.promotionStatus !== 'SCHEDULER' && (
           <CountdownTimer
-            endTime={promotion.endTime}
+            endTime={timerEndTime}
             variant="overlay"
           />
         )}
@@ -68,21 +78,37 @@ export const ProductCard: React.FC<ProductCardProps> = ({ promotion }) => {
           </div>
         )}
 
+        {/* Scheduler Overlay */}
+        {promotion.promotionStatus === 'SCHEDULER' && (
+          <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center">
+            <div className="text-center text-white">
+              <div className="text-sm mb-2">곧 시작합니다</div>
+              <CountdownTimer
+                endTime={timerEndTime}
+                variant="badge"
+              />
+            </div>
+          </div>
+        )}
+
         {/* Badges */}
         <div className="absolute top-2 left-2 flex flex-wrap gap-1">
-          {!isSoldOut && isLowStock && (
+          {!isSoldOut && isLowStock && promotion.promotionStatus === 'ACTIVE' && (
             <Badge variant="limited">한정수량</Badge>
           )}
           {promotion.promotionStatus === 'ACTIVE' && !isSoldOut && (
             <Badge variant="new">진행중</Badge>
           )}
+          {promotion.promotionStatus === 'SCHEDULER' && (
+            <Badge variant="new">대기중</Badge>
+          )}
         </div>
 
-        {/* Timer Badge (bottom right) */}
-        {!isSoldOut && (
+        {/* Timer Badge (bottom right) - ACTIVE 상태만 표시 */}
+        {!isSoldOut && promotion.promotionStatus === 'ACTIVE' && (
           <div className="absolute bottom-2 right-2">
             <CountdownTimer
-              endTime={promotion.endTime}
+              endTime={timerEndTime}
               variant="badge"
             />
           </div>
