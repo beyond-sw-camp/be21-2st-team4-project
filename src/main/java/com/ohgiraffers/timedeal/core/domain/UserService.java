@@ -33,7 +33,7 @@ public class UserService {
                 .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
         String token = UUID.randomUUID().toString();
         saveToken(user.getId(),token,3600);
-        return new SignInResponse(token);
+        return new SignInResponse(user.getId(), token);
 
     }
 
