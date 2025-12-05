@@ -12,8 +12,9 @@ export interface ErrorMessage {
 
 // Helper function to handle API responses
 export function handleApiResponse<T>(response: ApiResult<T>): T {
-  if (response.result === 'SUCCESS' && response.data !== null) {
-    return response.data;
+  if (response.result === 'SUCCESS') {
+    // void 타입인 경우 data가 null이어도 성공으로 처리
+    return response.data as T;
   } else {
     throw new Error(response.error?.message || 'API Error');
   }
