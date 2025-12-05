@@ -95,7 +95,8 @@ public class PromotionService {
                         p.endTime(),
                         p.productName(),
                         p.productImage(),
-                        p.originalPrice()
+                        p.originalPrice(),
+                        p.promotionStatus()  // promotionStatus 추가
 
 
                 ))
@@ -116,7 +117,8 @@ public class PromotionService {
                 p.endTime(),
                 p.productName(),
                 p.productImage(),
-                p.originalPrice()
+                p.originalPrice(),
+                p.promotionStatus()  // promotionStatus 추가
         ))
                 .toList();
 

@@ -37,7 +37,8 @@ public interface PromotionRepository extends JpaRepository<Promotion,Long> {
         ,pm.endTime
         ,pd.name
         ,pd.imageUrl
-        ,pd.price)
+        ,pd.price
+        ,pm.promotionStatus)
     from Promotion pm
     join Product pd on pm.productId = pd.id
     where pm.promotionStatus = ?1
@@ -66,7 +67,8 @@ public interface PromotionRepository extends JpaRepository<Promotion,Long> {
         ,pm.endTime
         ,pd.name
         ,pd.imageUrl
-        ,pd.price)
+        ,pd.price
+        ,pm.promotionStatus)
     from Promotion pm
     join Product pd
 """)

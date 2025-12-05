@@ -2,6 +2,7 @@ package com.ohgiraffers.timedeal.core.api.controller.v1.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ohgiraffers.timedeal.core.domain.Promotion;
+import com.ohgiraffers.timedeal.core.enums.PromotionStatus;
 import com.ohgiraffers.timedeal.core.support.response.ResultType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -23,7 +24,8 @@ public record PromotionResponse (
         LocalDateTime endTime,
         String productName,
         String productImage,
-        Integer originalPrice
+        Integer originalPrice,
+        PromotionStatus promotionStatus
         ){
 
 }
