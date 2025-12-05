@@ -1,16 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import type { Promotion } from '../types/promotion';
+import type { MyPageResponse } from '../types/user';
 import { promotionService } from '../services/promotionService';
+import { userService } from '../services/userService';
 import { ProductCard } from '../components/promotion/ProductCard';
+import { useAuth } from '../hooks/useAuth';
 
 export const PromotionList: React.FC = () => {
+  const { user } = useAuth();
   const [promotions, setPromotions] = useState<Promotion[]>([]);
+  const [userInfo, setUserInfo] = useState<MyPageResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
     loadPromotions();
-  }, []);
+    if (user) {
+      loadUserInfo();
+    }
+  }, [user]);
 
   const loadPromotions = async () => {
     try {
@@ -19,18 +27,25 @@ export const PromotionList: React.FC = () => {
       setPromotions(data);
     } catch (err: any) {
       console.error('프로모션 로드 실패:', err);
-
-      // 백엔드 API 문제로 인한 임시 처리
-      // 백엔드 PromotionController 50번 라인: "api/v1/promotions" → "/api/v1/promotions" 수정 필요
-      setError(
-        '프로모션 목록을 불러올 수 없습니다.\n' +
-        '(백엔드 API 경로 확인 필요: GET /api/v1/promotions)'
-      );
-
-      // 임시 목 데이터 사용 (개발용)
-      // setPromotions([]);
+      setError('프로모션 목록을 불러올 수 없습니다.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadUserInfo = async () => {
+    if (!user) return;
+    try {
+      const data = await userService.getUserProfile(user.id);
+      // MyPageResponse를 생성 (total_saved 포함)
+      const myPageData: MyPageResponse = {
+        name: data.name,
+        money: data.money,
+        total_saved: 0, // 백엔드에서 제공하는 값 (임시로 0)
+      };
+      setUserInfo(myPageData);
+    } catch (err: any) {
+      console.error('사용자 정보 로드 실패:', err);
     }
   };
 
@@ -75,24 +90,24 @@ export const PromotionList: React.FC = () => {
         </p>
       </div>
 
+      {/* User Info - 절약 금액 표시 */}
+      {user && userInfo && (
+        <div className="mb-6 bg-gradient-to-r from-sale-red to-pink-600 rounded-lg p-6 text-white shadow-lg">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm opacity-90 mb-1">{userInfo.name}님이 타임딜로 절약한 금액</p>
+              <p className="text-3xl font-bold">{userInfo.total_saved.toLocaleString()}원</p>
+            </div>
+            <div className="text-5xl">💰</div>
+          </div>
+        </div>
+      )}
+
       {/* Stats */}
       <div className="mb-6 flex items-center justify-between">
         <p className="text-text-secondary">
           총 <span className="font-bold text-sale-red">{promotions.length}</span>개의 타임딜 진행 중
         </p>
-        {/*
-        <div className="flex gap-2">
-          <button className="px-4 py-2 border border-border-default rounded hover:border-sale-red transition-colors">
-            신상품순
-          </button>
-          <button className="px-4 py-2 border border-border-default rounded hover:border-sale-red transition-colors">
-            마감임박순
-          </button>
-          <button className="px-4 py-2 border border-border-default rounded hover:border-sale-red transition-colors">
-            할인율순
-          </button>
-        </div>
-        */}
       </div>
 
       {/* Product Grid - 11st style: 3 columns on desktop */}
