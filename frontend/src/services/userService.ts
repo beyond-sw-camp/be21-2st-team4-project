@@ -2,7 +2,7 @@ import { api } from './api';
 import { API_ENDPOINTS } from '../config/api';
 import { handleApiResponse } from '../types/api';
 import type { ApiResult } from '../types/api';
-import type { User, SignInRequest, SignInResponse, SignUpRequest } from '../types/user';
+import type { User, SignInRequest, SignInResponse, SignUpRequest, MyPageResponse } from '../types/user';
 import type { Order } from '../types/order';
 
 export const userService = {
@@ -45,10 +45,10 @@ export const userService = {
   },
 
   /**
-   * Get user profile
+   * Get user profile (MyPageResponse from backend)
    */
-  async getUserProfile(userId: number): Promise<User> {
-    const response = await api.get<ApiResult<User>>(API_ENDPOINTS.USER_ME, {
+  async getUserProfile(userId: number): Promise<MyPageResponse> {
+    const response = await api.get<ApiResult<MyPageResponse>>(API_ENDPOINTS.USER_ME, {
       params: { userId },
     });
     return handleApiResponse(response.data);

@@ -37,13 +37,8 @@ export const PromotionList: React.FC = () => {
     if (!user) return;
     try {
       const data = await userService.getUserProfile(user.id);
-      // MyPageResponse를 생성 (total_saved 포함)
-      const myPageData: MyPageResponse = {
-        name: data.name,
-        money: data.money,
-        total_saved: 0, // 백엔드에서 제공하는 값 (임시로 0)
-      };
-      setUserInfo(myPageData);
+      // 백엔드에서 MyPageResponse 직접 반환
+      setUserInfo(data);
     } catch (err: any) {
       console.error('사용자 정보 로드 실패:', err);
     }
