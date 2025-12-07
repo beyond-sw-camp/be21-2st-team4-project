@@ -35,8 +35,9 @@ public class QueueService {
             // 유저가 존재하는지 확인
             //
 
-            // 유저를 대기열에 추가
-            boolean added = queueRepository.addWaitQueueIfAbsent(timedealId, userId);
+            // 유저를 대기열에 추가 (기존 유저를 초기화 할것인지?)
+            //boolean added = queueRepository.addWaitQueueIfAbsent(timedealId, userId);
+            boolean added = queueRepository.addWaitQueue(timedealId, userId);
 
             // 특정 유저가 타임딜 진행큐에 유효하며 존재하는지 확인
             if (queueRepository.isUserValidInProceedQueue(timedealId, userId)) {

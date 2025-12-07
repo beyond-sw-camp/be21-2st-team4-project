@@ -249,10 +249,14 @@ public class QueueRepositoryImpl implements QueueRepository {
      * @param now        현재 타임 스탬프
      */
     @Override
-    public void removeRangeProceedQueue(Long timedealId, Long now) {
+    public Set<String> removeRangeProceedQueue(Long timedealId, Long now) {
         ZSetOperations<String, String> zSetOps = stringRedisTemplate.opsForZSet();
-
         String proceedQueueKey = TimedealKeys.proceedQueue(timedealId);
-        zSetOps.removeRangeByScore(proceedQueueKey, 0, now);
+
+        Set<String> users = zSetOps.range(proceedQueueKey, 0, now);
+        if (users != null && !users.isEmpty()) {
+            zSetOps.removeRange(proceedQueueKey, 0, now);
+        }
+        return users;
     }
 }

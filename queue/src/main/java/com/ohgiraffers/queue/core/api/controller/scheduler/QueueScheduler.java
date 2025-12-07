@@ -33,7 +33,7 @@ public class QueueScheduler {
     public void scheduled() {
 
         RLock lock = redissonClient.getLock("queue-scheduler-lock");
-        if(!lock.tryLock()) {
+        if (!lock.tryLock()) {
             return;
         }
 
@@ -83,25 +83,28 @@ public class QueueScheduler {
     /**
      * 진행큐에 수용가능하다면 대기열에서 제거하여 이동
      * 이동했다면 상태 전송하기
-     * 
+     *
      * @param timedealId 타임딜 ID
-     * @param events 진행큐 상태 저장
+     * @param events     진행큐 상태 저장
      */
     private void runProceedQueue(Long timedealId, List<QueueStatusEvent> events) {
 
         // 진행 큐에서 만료된 유저 정리
-        long now = System.currentTimeMillis();
-        queueRepository.removeRangeProceedQueue(timedealId, now);
+        Set<String> expiredUsers = queueRepository.removeRangeProceedQueue(timedealId, System.currentTimeMillis());
+        for (String userStr : expiredUsers) {
+            long userId = Long.parseLong(userStr);
+            events.add(QueueStatusEvent.of(userId, timedealId, QueueStatus.EXPIRED));
+        }
 
         // proceed queue의 크기 구하기
         Optional<Long> count = queueRepository.getProceedQueueCount(timedealId);
-        if(count.isEmpty()) {
+        if (count.isEmpty()) {
             return;
         }
 
         // 가용할 수 있는 인원 구하기
         long available = QueueConstants.PROCEED_QUEUE_CAPACITY - count.get();
-        if(available <= 0) {
+        if (available <= 0) {
             return;
         }
 
@@ -117,16 +120,7 @@ public class QueueScheduler {
 
                 long expireAt = System.currentTimeMillis() + QueueConstants.PROCEED_QUEUE_TTL_MILLIS;
                 queueRepository.addProceedQueue(timedealId, userId, expireAt);
-
-                QueueStatusEvent event = new QueueStatusEvent(
-                        userId,
-                        timedealId,
-                        0L,
-                        0L,
-                        0L,
-                        QueueStatus.PROCEED
-                );
-                events.add(event);
+                events.add(QueueStatusEvent.of(userId, timedealId, QueueStatus.PROCEED));
             }
         }
     }
@@ -135,13 +129,13 @@ public class QueueScheduler {
      * 대기열에 있는 유저의 상태를 갱신하여 저장
      *
      * @param timedealId 타임딜 ID
-     * @param events 대기열 상태 저장
+     * @param events     대기열 상태 저장
      */
     private void runWaitQueue(Long timedealId, List<QueueStatusEvent> events) {
 
         // 대기열에 있는 유저 모두 출력
         Set<String> users = queueRepository.getAllWaitQueue(timedealId);
-        if(users == null || users.isEmpty()) {
+        if (users == null || users.isEmpty()) {
             return;
         }
 
@@ -166,7 +160,7 @@ public class QueueScheduler {
 
     /**
      * 대기열 상태를 배치로 발행
-     * 
+     *
      * @param events 대기열 상태 리스트
      */
     private void runPublish(List<QueueStatusEvent> events) {

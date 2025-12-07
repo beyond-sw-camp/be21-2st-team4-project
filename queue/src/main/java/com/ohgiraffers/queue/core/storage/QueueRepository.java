@@ -24,5 +24,5 @@ public interface QueueRepository {
     boolean removeWaitQueue(Long timedealId, Long userId);
     Set<String> removeRangeWaitQueue(Long timedealId, Long count);
     boolean removeProceedQueue(Long timedealId, Long userId);
-    void removeRangeProceedQueue(Long timedealId, Long now);
+    Set<String> removeRangeProceedQueue(Long timedealId, Long now);
 }

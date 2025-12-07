@@ -10,5 +10,7 @@ public record QueueStatusEvent(
         Long estimatedSeconds,
         QueueStatus status
 ) {
-
+    public static QueueStatusEvent of(Long userId, Long dealId, QueueStatus status) {
+        return new QueueStatusEvent(userId, dealId, 0L, 0L, 0L, status);
+    }
 }
