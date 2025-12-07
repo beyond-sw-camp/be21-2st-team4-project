@@ -8,6 +8,8 @@ import com.ohgiraffers.queue.core.enums.QueueStatus;
 import com.ohgiraffers.queue.core.messaging.QueueStatusPublisher;
 import com.ohgiraffers.queue.core.storage.QueueRepository;
 import lombok.RequiredArgsConstructor;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +21,7 @@ import java.util.Set;
 @Component
 @RequiredArgsConstructor
 public class QueueScheduler {
+    private final RedissonClient redissonClient;
     private final QueueStatusPublisher publisher;
     private final WaitTimeEstimator waitTimeEstimator;
     private final QueueRepository queueRepository;
@@ -29,32 +32,44 @@ public class QueueScheduler {
     @Scheduled(fixedRate = QueueConstants.QUEUE_SCHEDULER_INTERVAL_MILLIS)
     public void scheduled() {
 
-        // 활성화된 프로모션 조회
-        List<Long> timedeal = getActivePromotion();
-        if (timedeal.isEmpty()) {
+        RLock lock = redissonClient.getLock("queue-scheduler-lock");
+        if(!lock.tryLock()) {
             return;
         }
 
-        // 대기열 변화를 전송할 event list
-        List<QueueStatusEvent> events = new ArrayList<>();
+        try {
+            // 활성화된 프로모션 조회
+            List<Long> timedeal = getActivePromotion();
+            if (timedeal.isEmpty()) {
+                return;
+            }
 
-        // 프로모션별 완료 상태를 처리한다
-        for (Long promotion : timedeal) {
-            runProceedQueue(promotion, events);
+            // 대기열 변화를 전송할 event list
+            List<QueueStatusEvent> events = new ArrayList<>();
+
+            // 프로모션별 완료 상태를 처리한다
+            for (Long promotion : timedeal) {
+                runProceedQueue(promotion, events);
+            }
+
+            // 프로모션별 대기열의 상태를 업데이트 한다
+            for (Long promotion : timedeal) {
+                runWaitQueue(promotion, events);
+            }
+
+            // 대기열 변화 배치 처리
+            runPublish(events);
+
+        } finally {
+            lock.unlock();
         }
-
-        // 프로모션별 대기열의 상태를 업데이트 한다
-        for (Long promotion : timedeal) {
-            runWaitQueue(promotion, events);
-        }
-
-        // 대기열 변화 배치 처리
-        runPublish(events);
     }
 
 
     /**
      * Redis에 활성화된 프로모션을 조회한다
+     *
+     * @return 활성화된 프로모션 리스트
      */
     private List<Long> getActivePromotion() {
 
@@ -113,8 +128,6 @@ public class QueueScheduler {
                 );
                 events.add(event);
             }
-
-            queueRepository.removeWaitQueue(timedealId, userId);
         }
     }
 

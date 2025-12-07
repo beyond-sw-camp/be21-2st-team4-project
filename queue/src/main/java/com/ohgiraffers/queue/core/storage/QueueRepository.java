@@ -17,8 +17,9 @@ public interface QueueRepository {
     Optional<Double> getProceedQueueExpire(Long timedealId, Long userId);
 
     // Writer
-    void addWaitQueue(Long timedealId, Long userId);
-    void addProceedQueue(Long timedealId, Long userId, long expireAt);
+    boolean addWaitQueue(Long timedealId, Long userId);
+    boolean addWaitQueueIfAbsent(Long timedealId, Long userId);
+    boolean addProceedQueue(Long timedealId, Long userId, long expireAt);
 
     boolean removeWaitQueue(Long timedealId, Long userId);
     Set<String> removeRangeWaitQueue(Long timedealId, Long count);

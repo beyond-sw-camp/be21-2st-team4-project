@@ -89,6 +89,12 @@ public class QueueRepositoryImpl implements QueueRepository {
         return expireAt != null && expireAt >= System.currentTimeMillis();
     }
 
+    /**
+     * 대기열 전체 유저 조회
+     *
+     * @param timedealId 타임딜 ID
+     * @return 대기열 전체 유저 셋
+     */
     @Override
     public Set<String> getAllWaitQueue(Long timedealId) {
         ZSetOperations<String, String> zSetOps = stringRedisTemplate.opsForZSet();
@@ -97,6 +103,12 @@ public class QueueRepositoryImpl implements QueueRepository {
         return zSetOps.range(waitQueueKey, 0, -1);
     }
 
+    /**
+     * 대기열 카운트 조회
+     *
+     * @param timedealId 타임딜 ID
+     * @return 대기열의 카운트
+     */
     @Override
     public Optional<Long> getWaitQueueCount(Long timedealId) {
         ZSetOperations<String, String> zSetOps = stringRedisTemplate.opsForZSet();
@@ -105,6 +117,12 @@ public class QueueRepositoryImpl implements QueueRepository {
         return Optional.ofNullable(zSetOps.size(waitQueueKey));
     }
 
+    /**
+     * 진행큐 카운트 조회
+     *
+     * @param timedealId 타임딜 ID
+     * @return 진행큐의 카운트
+     */
     @Override
     public Optional<Long> getProceedQueueCount(Long timedealId) {
         ZSetOperations<String, String> zSetOps = stringRedisTemplate.opsForZSet();
@@ -120,16 +138,37 @@ public class QueueRepositoryImpl implements QueueRepository {
      *
      * @param timedealId 타임딜 ID
      * @param userId     유저 ID
+     * @return 추가 유무
      */
     @Override
-    public void addWaitQueue(Long timedealId, Long userId) {
+    public boolean addWaitQueue(Long timedealId, Long userId) {
         ZSetOperations<String, String> zSetOps = stringRedisTemplate.opsForZSet();
 
         String userStr = TimedealKeys.makeUser(userId);
         String waitQueueKey = TimedealKeys.waitQueue(timedealId);
 
         long score = System.currentTimeMillis();
-        zSetOps.add(waitQueueKey, userStr, score);
+        Boolean added = zSetOps.add(waitQueueKey, userStr, score);
+        return added != null && added;
+    }
+
+    /**
+     * 존재하지 않는다면 추가
+     *
+     * @param timedealId 타임딜 ID
+     * @param userId     유저 ID
+     * @return 추가 유무
+     */
+    @Override
+    public boolean addWaitQueueIfAbsent(Long timedealId, Long userId) {
+        ZSetOperations<String, String> zSetOps = stringRedisTemplate.opsForZSet();
+
+        String userStr = TimedealKeys.makeUser(userId);
+        String waitQueueKey = TimedealKeys.waitQueue(timedealId);
+
+        long score = System.currentTimeMillis();
+        Boolean added = zSetOps.addIfAbsent(waitQueueKey, userStr, score);
+        return added != null && added;
     }
 
     /**
@@ -137,15 +176,17 @@ public class QueueRepositoryImpl implements QueueRepository {
      *
      * @param timedealId 타임딜 ID
      * @param userId     유저 ID
+     * @return 추가 유무
      */
     @Override
-    public void addProceedQueue(Long timedealId, Long userId, long expireAt) {
+    public boolean addProceedQueue(Long timedealId, Long userId, long expireAt) {
         ZSetOperations<String, String> zSetOps = stringRedisTemplate.opsForZSet();
 
         String userStr = TimedealKeys.makeUser(userId);
         String proceedQueueKey = TimedealKeys.proceedQueue(timedealId);
 
-        zSetOps.add(proceedQueueKey, userStr, expireAt);
+        Boolean added = zSetOps.add(proceedQueueKey, userStr, expireAt);
+        return added != null && added;
     }
 
     /**
@@ -165,12 +206,23 @@ public class QueueRepositoryImpl implements QueueRepository {
         return (waitRemoved != null && waitRemoved > 0);
     }
 
+    /**
+     * 대기열의 카운트에 따른 범위 제거
+     *
+     * @param timedealId 타임딜 ID
+     * @param count      삭제할 카운트
+     * @return 삭제된 유저 셋
+     */
     @Override
     public Set<String> removeRangeWaitQueue(Long timedealId, Long count) {
         ZSetOperations<String, String> zSetOps = stringRedisTemplate.opsForZSet();
-
         String waitQueueKey = TimedealKeys.waitQueue(timedealId);
-        return zSetOps.range(waitQueueKey, 0, count - 1);
+
+        Set<String> users = zSetOps.range(waitQueueKey, 0, count - 1);
+        if (users != null && !users.isEmpty()) {
+            zSetOps.removeRange(waitQueueKey, 0, count - 1);
+        }
+        return users;
     }
 
     /**
@@ -190,6 +242,12 @@ public class QueueRepositoryImpl implements QueueRepository {
         return (proceedRemoved != null && proceedRemoved > 0);
     }
 
+    /**
+     * 진행큐의 유효기간에 따른 범위 삭제
+     *
+     * @param timedealId 타임딜 ID
+     * @param now        현재 타임 스탬프
+     */
     @Override
     public void removeRangeProceedQueue(Long timedealId, Long now) {
         ZSetOperations<String, String> zSetOps = stringRedisTemplate.opsForZSet();

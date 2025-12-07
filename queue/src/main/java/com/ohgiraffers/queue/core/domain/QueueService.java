@@ -33,13 +33,16 @@ public class QueueService {
             // 유저가 존재하는지 확인
             //
 
+            // 유저를 대기열에 추가
+            boolean added = queueRepository.addWaitQueueIfAbsent(timedealId, userId);
+
             // 특정 유저가 타임딜 진행큐에 유효하며 존재하는지 확인
             if (queueRepository.isUserValidInProceedQueue(timedealId, userId)) {
+                if (added) {
+                    queueRepository.removeWaitQueue(timedealId, userId);
+                }
                 return QueueStatusResponse.of(QueueStatus.PROCEED);
             }
-
-            // 유저를 대기열에 추가
-            queueRepository.addWaitQueue(timedealId, userId);
 
             // User의 Queue상태를 저장
             Long position = queueRepository.getWaitQueuePosition(timedealId, userId).orElseThrow(() -> new CoreException(ErrorType.QUEUE_NOT_FOUND));
@@ -62,14 +65,14 @@ public class QueueService {
         try {
             // wait queue에 있는지 확인
             Optional<Long> position = queueRepository.getWaitQueuePosition(timedealId, userId);
-            if(position.isPresent()) {
+            if (position.isPresent()) {
                 Long totalWaiting = queueRepository.getWaitQueueCount(timedealId).orElseThrow(() -> new CoreException(ErrorType.QUEUE_NOT_FOUND));
                 long waitingTime = waitTimeEstimator.estimateWaitSeconds(timedealId, position.get());
                 return new QueueStatusResponse(position.get(), totalWaiting, waitingTime, QueueStatus.WAITING);
             }
 
             // proceed queue에 있는지 확인
-            if(queueRepository.isUserValidInProceedQueue(timedealId, userId)) {
+            if (queueRepository.isUserValidInProceedQueue(timedealId, userId)) {
                 return QueueStatusResponse.of(QueueStatus.PROCEED);
             }
 
@@ -93,7 +96,7 @@ public class QueueService {
         try {
 
             Optional<Double> expireAt = queueRepository.getProceedQueueExpire(timedealId, userId);
-            if(expireAt.isPresent()) {
+            if (expireAt.isPresent()) {
                 long remainingTimeMs = expireAt.get().longValue() - System.currentTimeMillis();
                 long usedTimeMs = QueueConstants.PROCEED_QUEUE_TTL_MILLIS - remainingTimeMs;
                 waitTimeEstimator.recordProcessingTime(timedealId, usedTimeMs);
@@ -117,7 +120,7 @@ public class QueueService {
     public void verifyQueue(Long timedealId, Long userId) {
         try {
             boolean isVerify = queueRepository.isUserValidInProceedQueue(timedealId, userId);
-            if(!isVerify) {
+            if (!isVerify) {
                 throw new CoreException(ErrorType.QUEUE_NOT_FOUND);
             }
 
@@ -126,7 +129,12 @@ public class QueueService {
         }
     }
 
-
+    /**
+     * SSE 생성 및 반환
+     *
+     * @param userId 유저 ID
+     * @return SSE 반환
+     */
     public SseEmitter getQueueSubscribe(Long userId) {
         return sseEmitterRegistry.createEmitter(userId);
     }
