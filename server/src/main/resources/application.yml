@@ -1,9 +1,6 @@
-server:
-  port: 8761
+spring:
+  application:
+    name: timedeal-server
 
-eureka:
-  client:
-    register-with-eureka: false
-    fetch-registry: false
-    service-url:
-      defaultZone: http://localhost:8761/eureka
+  profiles:
+    active: local
