@@ -1,11 +1,11 @@
-package com.ohgiraffers.promotion.core.domain;
+package com.ohgiraffers.timedeal.core.domain;
 
+import com.ohgiraffers.timedeal.core.api.controller.v1.request.PromotionRequest;
+import com.ohgiraffers.timedeal.core.api.controller.v1.response.PromotionResponse;
+import com.ohgiraffers.timedeal.core.api.controller.v1.response.RedisPromotionResponse;
+import com.ohgiraffers.timedeal.core.enums.PromotionStatus;
 import com.ohgiraffers.common.support.response.ResultType;
-import com.ohgiraffers.promotion.core.api.controller.v1.request.PromotionRequest;
-import com.ohgiraffers.promotion.core.api.controller.v1.response.PromotionResponse;
-import com.ohgiraffers.promotion.core.api.controller.v1.response.RedisPromotionResponse;
-import com.ohgiraffers.promotion.core.enums.PromotionStatus;
-import com.ohgiraffers.promotion.storage.PromotionRepository;
+import com.ohgiraffers.timedeal.storage.PromotionRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,14 +14,19 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static com.ohgiraffers.common.support.response.ApiResult.success;
+
 @Service
 @RequiredArgsConstructor
 public class PromotionService {
     private final PromotionRepository promotionRepository;
+    private final ProductRepository  productRepository;
 
     //프로모션 생성(이미 진행하고있는 프로모션이 있나 비교)
     public void promotionSave(PromotionRequest pr) {
             AtomicReference<ResultType> createdSuccess = new AtomicReference<>(ResultType.ERROR);
+
+        Product product = productRepository.findById(pr.getProductId()).orElseThrow();
 
         Promotion promotion =
                     promotionRepository.findByProductId(pr.getProductId())
@@ -35,6 +40,7 @@ public class PromotionService {
                                        pr.getEndTime(),
                                        pr.getTotalQuantity()
                                );
+                               promotion1.setSalePrice((int) (product.getPrice() * promotion1.getDiscountRate()));
                                if(pr.getStartTime().isAfter(LocalDateTime.now())) {
                                 promotion1.changeStatus(PromotionStatus.SCHEDULER);
                                }
@@ -65,17 +71,6 @@ public class PromotionService {
 
         promotionRepository.save(promotion);
     }
-    @Transactional
-    public void changePromotionStatus(Long id) {
-        PromotionStatus promotionStatus = promotionRepository.findPromotionStatusById(id);
-        Promotion promotion = promotionRepository.findPromotionById(id);
-        if(promotionStatus.equals(PromotionStatus.SCHEDULER) && promotion.getStartTime().isBefore(LocalDateTime.now())) {
-            promotion.changeStatus(PromotionStatus.ACTIVE);
-        }
-        else if(promotionStatus.equals(PromotionStatus.ACTIVE) && promotion.getEndTime().isBefore(LocalDateTime.now())) {
-            promotion.changeStatus(PromotionStatus.ENDED);
-        }
-    }
 
 
     public void deletePromotion(Long Id) {
@@ -92,7 +87,12 @@ public class PromotionService {
                         p.discountRate(),
                         p.totalQuantity(),
                         p.startTime(),
-                        p.endTime()
+                        p.endTime(),
+                        p.productName(),
+                        p.productImage(),
+                        p.originalPrice()
+
+
                 ))
                 .toList();
 
@@ -100,7 +100,7 @@ public class PromotionService {
 
 
     public List<PromotionResponse> getPromotionsByStatus(PromotionStatus promotionStatus) {
-        return promotionRepository.findPromotionByPromotionStatus(promotionStatus).stream().map(p -> new PromotionResponse(
+        return promotionRepository.findByPromotionStatus(promotionStatus).stream().map(p -> new PromotionResponse(
                 p.id(),
                 p.adminId(),
                 p.productId(),
@@ -108,7 +108,10 @@ public class PromotionService {
                 p.discountRate(),
                 p.totalQuantity(),
                 p.startTime(),
-                p.endTime()
+                p.endTime(),
+                p.productName(),
+                p.productImage(),
+                p.originalPrice()
         ))
                 .toList();
 
@@ -120,15 +123,9 @@ public class PromotionService {
         return promotionRepository.findAllByPromotionStatus(PromotionStatus.ACTIVE);
     }
 
-    @Transactional
-    public void updatePromotionStatus(Long id, PromotionStatus promotionStatus) {
-        promotionRepository.updatePromotionStatus(id, promotionStatus);
-    }
-
     public Promotion findPromotionById(long id) {
         return promotionRepository.findPromotionById(id);
     }
-
     public List<Promotion> updateStatus(){
         return promotionRepository.findAll();
     }

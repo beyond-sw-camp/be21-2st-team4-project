@@ -1,18 +1,17 @@
 package com.ohgiraffers.order.core.domain;
 
+import com.ohgiraffers.account.core.domain.User;
+import com.ohgiraffers.account.storage.UserRepository;
 import com.ohgiraffers.order.core.api.controller.v1.request.OrderRequest;
-import com.ohgiraffers.order.core.domain.Product;
-import com.ohgiraffers.order.core.domain.Promotion;
-import com.ohgiraffers.order.core.domain.StockService;
-import com.ohgiraffers.order.core.domain.User;
-import com.ohgiraffers.order.core.enums.PromotionStatus;
-import com.ohgiraffers.order.core.support.error.CoreException;
-import com.ohgiraffers.order.core.support.error.ErrorType;
+import com.ohgiraffers.product.core.domain.Product;
+import com.ohgiraffers.product.storage.ProductRepository;
+import com.ohgiraffers.promotion.core.domain.Promotion;
+import com.ohgiraffers.promotion.core.enums.PromotionStatus;
+import com.ohgiraffers.promotion.storage.PromotionRepository;
+import com.ohgiraffers.common.support.error.CoreException;
+import com.ohgiraffers.common.support.error.ErrorType;
 import com.ohgiraffers.order.storage.OrderDetailRepository;
 import com.ohgiraffers.order.storage.OrderRepository;
-import com.ohgiraffers.order.storage.ProductRepository;
-import com.ohgiraffers.order.storage.PromotionRepository;
-import com.ohgiraffers.order.storage.UserRepository;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,8 +50,6 @@ public class OrderService {
 
     @Transactional
     public void createOrder(OrderRequest orderRequest) {
-
-        // 요청 유효성 검증
         orderRequest.validate();
 
         RLock lock = redissonClient.getLock("lock:stock:" + orderRequest.getPromotionId());
@@ -62,39 +59,38 @@ public class OrderService {
                 throw new CoreException(ErrorType.DEFAULT_ERROR);
             }
 
-            // 상품 조회
             Promotion promotion = promotionRepository.findById(orderRequest.getPromotionId())
                     .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
 
-            // 유저 조회
             User user = userRepository.findById(orderRequest.getUserId())
                     .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
 
-            // 프로모션 상태 체크
+            stockService.validProcessedQueue(orderRequest.getUserId());
+            stockService.validCompleteQueue(orderRequest.getPromotionId(), orderRequest.getUserId());
+
             if (promotion.getPromotionStatus() != PromotionStatus.ACTIVE) {
                 throw new CoreException(ErrorType.DEFAULT_ERROR);
             }
 
-            // 유저 잔액 체크
             if (user.getMoney() < promotion.getSalePrice()) {
                 throw new CoreException(ErrorType.DEFAULT_ERROR);
             }
 
-            // Redis로 재고 감소
             boolean stockAvailable = stockService.decreaseStock(
                     orderRequest.getPromotionId(),
                     orderRequest.getQuantity()
             );
 
-            if(!stockAvailable){
+            if (!stockAvailable) {
                 throw new CoreException(ErrorType.DEFAULT_ERROR);
             }
 
-            // 구매 처리
-            user.decreaseMoney(promotion.getSalePrice().longValue());     // 유저 잔액 차감
-            promotion.increaseSoldQuantity();             // soldQuantity += 1
+            stockService.deleteProcessedQueue(orderRequest.getUserId());
+            stockService.addCompleteQueue(orderRequest.getPromotionId(), orderRequest.getUserId());
 
-            // Order 생성
+            user.decreaseMoney(promotion.getSalePrice().longValue());
+            promotion.increaseSoldQuantity();
+
             Integer totalAmount = promotion.getSalePrice().intValue() * orderRequest.getQuantity();
             Order order = Order.create(user.getId(), totalAmount);
             orderRepository.save(order);
@@ -102,7 +98,6 @@ public class OrderService {
             Product product = productRepository.findById(promotion.getProductId())
                     .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
 
-            // OrderDetail 생성
             OrderDetail orderDetail = OrderDetail.of(
                     order.getId(),
                     promotion.getId(),
