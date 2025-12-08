@@ -1,4 +1,6 @@
-package com.ohgiraffers.timedeal.core.api.controller.v1.response;
+package com.ohgiraffers.product.core.api.controller.v1.response;
+
+import com.ohgiraffers.product.core.domain.Product;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.ohgiraffers.timedeal.core.domain;
+package com.ohgiraffers.product.core.domain;
 
 import com.ohgiraffers.common.entity.BaseEntity;
 import jakarta.persistence.*;

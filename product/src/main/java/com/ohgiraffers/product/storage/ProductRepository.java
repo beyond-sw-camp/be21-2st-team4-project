@@ -1,6 +1,6 @@
-package com.ohgiraffers.timedeal.storage;
+package com.ohgiraffers.product.storage;
 
-import com.ohgiraffers.timedeal.core.domain.Product;
+import com.ohgiraffers.product.core.domain.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

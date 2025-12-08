@@ -1,10 +1,11 @@
-package com.ohgiraffers.timedeal.core.domain;
+package com.ohgiraffers.product.core.domain;
 
-import com.ohgiraffers.timedeal.core.api.controller.v1.request.CategoryRequest;
-import com.ohgiraffers.timedeal.core.api.controller.v1.response.CategoryResponse;
-import com.ohgiraffers.timedeal.storage.CategoryRepository;
 import com.ohgiraffers.common.support.error.CoreException;
 import com.ohgiraffers.common.support.error.ErrorType;
+import com.ohgiraffers.product.core.api.controller.v1.request.CategoryRequest;
+import com.ohgiraffers.product.core.api.controller.v1.response.CategoryResponse;
+import com.ohgiraffers.product.core.domain.Category;
+import com.ohgiraffers.product.storage.CategoryRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

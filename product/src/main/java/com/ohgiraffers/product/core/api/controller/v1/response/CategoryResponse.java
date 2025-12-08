@@ -1,5 +1,6 @@
-package com.ohgiraffers.timedeal.core.api.controller.v1.response;
+package com.ohgiraffers.product.core.api.controller.v1.response;
 
+import com.ohgiraffers.timedeal.core.domain.Category;
 import lombok.Getter;
 
 import java.time.LocalDateTime;

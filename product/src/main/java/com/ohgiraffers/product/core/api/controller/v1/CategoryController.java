@@ -1,7 +1,8 @@
-package com.ohgiraffers.timedeal.core.api.controller.v1;
+package com.ohgiraffers.product.core.api.controller.v1;
 
-import com.ohgiraffers.timedeal.core.api.controller.v1.request.CategoryRequest;
-import com.ohgiraffers.timedeal.core.api.controller.v1.response.CategoryResponse;
+import com.ohgiraffers.product.core.api.controller.v1.request.CategoryRequest;
+import com.ohgiraffers.product.core.api.controller.v1.response.CategoryResponse;
+import com.ohgiraffers.product.core.domain.CategoryService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

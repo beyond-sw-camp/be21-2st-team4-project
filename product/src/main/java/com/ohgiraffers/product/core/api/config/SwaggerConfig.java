@@ -1,4 +1,4 @@
-package com.ohgiraffers.timedeal.core.api.config;
+package com.ohgiraffers.product.core.api.config;
 
 
 import io.swagger.v3.oas.models.OpenAPI;
