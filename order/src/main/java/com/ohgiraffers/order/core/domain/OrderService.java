@@ -1,13 +1,16 @@
-package com.ohgiraffers.timedeal.core.domain;
+package com.ohgiraffers.order.core.domain;
 
-import com.ohgiraffers.timedeal.core.api.controller.v1.request.OrderRequest;
-import com.ohgiraffers.timedeal.core.enums.PromotionStatus;
+import com.ohgiraffers.account.core.domain.User;
+import com.ohgiraffers.order.core.api.controller.v1.request.OrderRequest;
+import com.ohgiraffers.product.storage.ProductRepository;
+import com.ohgiraffers.promotion.core.domain.Promotion;
+import com.ohgiraffers.promotion.core.enums.PromotionStatus;
 import com.ohgiraffers.common.support.error.CoreException;
 import com.ohgiraffers.common.support.error.ErrorType;
-import com.ohgiraffers.timedeal.storage.OrderDetailRepository;
-import com.ohgiraffers.timedeal.storage.OrderRepository;
-import com.ohgiraffers.timedeal.storage.PromotionRepository;
-import com.ohgiraffers.timedeal.storage.UserRepository;
+import com.ohgiraffers.order.storage.OrderDetailRepository;
+import com.ohgiraffers.order.storage.OrderRepository;
+import com.ohgiraffers.promotion.storage.PromotionRepository;
+import com.ohgiraffers.account.storage.UserRepository;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;

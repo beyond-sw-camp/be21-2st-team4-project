@@ -27,17 +27,26 @@ dependencies {
     // Common Module
     implementation project(':common')
 
-    // Database (MySQL 또는 MariaDB 중 하나만 선택)
-    implementation 'mysql:mysql-connector-java:8.0.33'
-    // runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+    // Database
+    implementation 'org.mariadb.jdbc:mariadb-java-client'
 
     // Spring Boot
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.kafka:spring-kafka'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // Feign
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+    // Security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
 
     // Spring Cloud Eureka
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'

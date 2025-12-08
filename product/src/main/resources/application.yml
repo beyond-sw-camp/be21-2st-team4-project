@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: timedeal-queue-service
+    name: timedeal-product-service
 
   jpa:
     properties:
