@@ -5,6 +5,7 @@ import com.ohgiraffers.account.core.api.controller.v1.request.LoginRequest;
 import com.ohgiraffers.account.core.api.controller.v1.request.SignUpRequest;
 import com.ohgiraffers.account.core.api.controller.v1.request.VerifyTokenRequest;
 import com.ohgiraffers.account.core.api.controller.v1.response.MyPageResponse;
+import com.ohgiraffers.account.core.api.controller.v1.response.MyPageOrderResponse;
 import com.ohgiraffers.account.core.api.controller.v1.response.OrderDetailResponse;
 import com.ohgiraffers.account.core.api.controller.v1.response.SignInResponse;
 import com.ohgiraffers.account.core.domain.UserService;

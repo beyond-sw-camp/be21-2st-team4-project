@@ -1,9 +1,4 @@
-<<<<<<<< HEAD:account/src/main/java/com/ohgiraffers/account/core/api/controller/v1/response/OrderDetailResponse.java
 package com.ohgiraffers.account.core.api.controller.v1.response;
-
-========
-package com.ohgiraffers.order.core.api.controller.v1.response;
->>>>>>>> dev:order/src/main/java/com/ohgiraffers/order/core/api/controller/v1/response/OrderDetailResponse.java
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
