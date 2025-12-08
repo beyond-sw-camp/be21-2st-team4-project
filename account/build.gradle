@@ -23,8 +23,15 @@ repositories {
 }
 
 dependencies {
+    implementation 'org.redisson:redisson:3.27.2'
+
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
     // Common Module
     implementation project(':common')
+
 
     // Spring Boot
     implementation 'org.springframework.boot:spring-boot-starter-web'
