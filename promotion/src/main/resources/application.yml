@@ -14,7 +14,6 @@ spring:
     show-sql: true
 
   datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
     url: jdbc:mariadb://localhost:3307/timedealdb
     username: timedeal
     password: timedeal
@@ -37,3 +36,11 @@ eureka:
 logging:
   level:
     org.hibernate.SQL: debug
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui
+    operations-sorter: method
+    tags-sorter: alpha
+  api-docs:
+    path: /v3/api-docs

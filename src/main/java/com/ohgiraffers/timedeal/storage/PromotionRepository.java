@@ -26,7 +26,7 @@ public interface PromotionRepository extends JpaRepository<Promotion,Long> {
     Promotion findPromotionById(Long id);
 
     @Query("""
-    select new com.ohgiraffers.timedeal.core.api.controller.v1.response.PromotionResponse(
+    select (
          pm.id
         ,pm.adminId
         ,pm.productId
@@ -55,8 +55,8 @@ public interface PromotionRepository extends JpaRepository<Promotion,Long> {
     List<RedisPromotionResponse> findAllByPromotionStatus(PromotionStatus promotionStatus);
 
     @Query("""
-    select new com.ohgiraffers.timedeal.core.api.controller.v1.response.PromotionResponse(
-    pm.id
+    select(
+        pm.id
         ,pm.adminId
         ,pm.productId
         ,pm.salePrice
