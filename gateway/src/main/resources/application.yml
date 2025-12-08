@@ -18,9 +18,9 @@ spring:
             - id: queue-service
               uri: lb://TIMEDEAL-QUEUE-SERVICE
               predicates:
-                - Path=/api/v1/queue/**
+                - Path=/api/v1/queues/**
               filters:
-                - RewritePath=/api/v1/queue/(?<segment>.*), /$\{segment}
+                - RewritePath=/api/v1/queues/(?<segment>.*), /$\{segment}
             - id: promotion-service
               uri: lb://TIMEDEAL-PROMOTION-SERVICE
               predicates:

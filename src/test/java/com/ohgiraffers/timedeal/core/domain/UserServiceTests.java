@@ -1,10 +1,7 @@
 package com.ohgiraffers.timedeal.core.domain;
 
 import com.ohgiraffers.timedeal.core.api.controller.v1.response.MyPageResponse;
-import com.ohgiraffers.timedeal.core.api.controller.v1.response.OrderDetailResponse;
 import com.ohgiraffers.timedeal.core.api.controller.v1.response.SignInResponse;
-import com.ohgiraffers.timedeal.storage.OrderDetailRepository;
-import com.ohgiraffers.timedeal.storage.OrderRepository;
 import com.ohgiraffers.timedeal.storage.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;

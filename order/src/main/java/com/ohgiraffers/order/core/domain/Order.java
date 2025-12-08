@@ -1,0 +1,39 @@
+package com.ohgiraffers.order.core.domain;
+
+import com.ohgiraffers.timedeal.core.enums.OrderStatus;
+import com.ohgiraffers.timedeal.storage.BaseEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "orders")
+public class Order extends BaseEntity {
+
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
+
+    @Column(name = "total_amount", nullable = false)
+    private Integer totalAmount;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name="order_status")
+    private OrderStatus orderStatus = OrderStatus.DONE;
+
+    public static Order create(Long userId, Integer totalAmount) {
+        Order order = new Order();
+        order.userId = userId;
+        order.totalAmount = totalAmount;
+        order.orderStatus = OrderStatus.DONE;
+        return order;
+    }
+
+}

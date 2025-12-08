@@ -9,10 +9,15 @@ public enum ErrorType {
     DEFAULT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.E500, "An unexpected error has occurred.", LogLevel.ERROR),
     DEFAULT_ARGUMENT_NOT_VALID(HttpStatus.BAD_REQUEST, ErrorCode.E400, "An unexpected error has occurred.", LogLevel.WARN),
 
-    // REDIS ERROR
-    REDIS_CONN_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.REDIS_ERROR, "REDIS ERROR.", LogLevel.ERROR),
+    // USER ERROR
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, ErrorCode.USER_NOT_FOUND, "유저가 존재하지 않습니다.", LogLevel.WARN),
 
-    // QUEUE ERROR
+
+    // REDIS ERROR
+    REDIS_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.REDIS_ERROR, "레디스 알 수 없는 예외 발생", LogLevel.ERROR),
+    REDIS_CONN_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.REDIS_CONN_FAILURE, "레디스 연결 또는 타임아웃 발생", LogLevel.ERROR),
+
+    // QUEUE ERROR,
     QUEUE_NOT_FOUND(HttpStatus.NOT_FOUND, ErrorCode.QUEUE_NOT_FOUND, "대기열이 존재하지 않습니다.", LogLevel.WARN),
     QUEUE_EXPIRED(HttpStatus.GONE, ErrorCode.QUEUE_EXPIRED, "진행큐에 기간이 만료되었습니다.", LogLevel.WARN),
 
