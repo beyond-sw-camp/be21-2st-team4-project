@@ -1,7 +1,9 @@
 package com.ohgiraffers.promotion.core.domain;
 
 import com.ohgiraffers.common.support.response.ResultType;
+import com.ohgiraffers.promotion.core.api.controller.v1.request.OrderRequest;
 import com.ohgiraffers.promotion.core.api.controller.v1.request.PromotionRequest;
+import com.ohgiraffers.promotion.core.api.controller.v1.response.OrderResponse;
 import com.ohgiraffers.promotion.core.api.controller.v1.response.PromotionResponse;
 import com.ohgiraffers.promotion.core.api.controller.v1.response.RedisPromotionResponse;
 import com.ohgiraffers.promotion.core.enums.PromotionStatus;
@@ -18,6 +20,10 @@ import java.util.concurrent.atomic.AtomicReference;
 @RequiredArgsConstructor
 public class PromotionService {
     private final PromotionRepository promotionRepository;
+    public void updateSoldQuantity(OrderRequest orderRequest) {
+        Long promotionSoldQuantity = promotionRepository.findSoldQuantityById(orderRequest.getId());
+        promotionRepository.updatePromotionSoldQuantity(orderRequest.getId(), orderRequest.getSoldQuantity() + promotionSoldQuantity);
+    };
 
     //프로모션 생성(이미 진행하고있는 프로모션이 있나 비교)
     public void promotionSave(PromotionRequest pr) {
@@ -131,6 +137,10 @@ public class PromotionService {
 
     public List<Promotion> updateStatus(){
         return promotionRepository.findAll();
+    }
+
+    public OrderResponse findOrderResponseById(long id) {
+        return promotionRepository.findOrderResponseById(id);
     }
 }
 

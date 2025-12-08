@@ -1,5 +1,6 @@
 package com.ohgiraffers.promotion.storage;
 
+import com.ohgiraffers.promotion.core.api.controller.v1.response.OrderResponse;
 import com.ohgiraffers.promotion.core.api.controller.v1.response.PromotionResponse;
 import com.ohgiraffers.promotion.core.api.controller.v1.response.RedisPromotionResponse;
 import com.ohgiraffers.promotion.core.domain.Promotion;
@@ -9,7 +10,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -57,4 +57,16 @@ public interface PromotionRepository extends JpaRepository<Promotion,Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select p from Promotion p where p.id = :id")
     public Optional<Promotion> findByIdWithPessimisticLock(Long id);
+
+    void findSoldQuantityById(Long id, Long soldQuantity);
+    @Modifying
+    @Query("""
+    update Promotion
+    set soldQuantity = :soldQuantity
+    where id = :id
+""")
+    void updatePromotionSoldQuantity(Long id, Long soldQuantity);
+    Long findSoldQuantityById(Long id);
+
+    OrderResponse findOrderResponseById(long id);
 }

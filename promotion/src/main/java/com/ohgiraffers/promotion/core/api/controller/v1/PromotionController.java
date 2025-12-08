@@ -1,14 +1,18 @@
 package com.ohgiraffers.promotion.core.api.controller.v1;
 
 import com.ohgiraffers.common.support.response.ApiResult;
+import com.ohgiraffers.promotion.core.api.controller.v1.request.OrderRequest;
 import com.ohgiraffers.promotion.core.api.controller.v1.request.PromotionRequest;
+import com.ohgiraffers.promotion.core.api.controller.v1.response.OrderResponse;
 import com.ohgiraffers.promotion.core.api.controller.v1.response.PromotionResponse;
 import com.ohgiraffers.promotion.core.domain.Promotion;
 import com.ohgiraffers.promotion.core.domain.PromotionService;
 import com.ohgiraffers.promotion.core.enums.PromotionStatus;
+import org.hibernate.query.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -45,7 +49,7 @@ public class PromotionController {
     public ApiResult<List<PromotionResponse>> getAllPromotion() {
         return ApiResult.success(promotionService.findAll());
     }
-    @GetMapping("/api/v1/promtions/{promotionStatus}")
+    @GetMapping("/api/v1/promotions/{promotionStatus}")
     public ApiResult<List<PromotionResponse>> getPromotionsStatusAll(
             @PathVariable PromotionStatus promotionStatus)
     {
@@ -56,5 +60,18 @@ public class PromotionController {
             @PathVariable long id
     ) {
         return ApiResult.success(promotionService.findPromotionById(id));
+    }
+
+    @PostMapping("/api/v1/promotions")
+    public ApiResult<?> checkTotalQuantity (@RequestBody OrderRequest orderRequest) {
+        promotionService.updateSoldQuantity(orderRequest);
+        return ApiResult.success();
+    }
+
+    @GetMapping("/api/v1/promtoions/{id}")
+    public ApiResult<OrderResponse> getOrderById(@PathVariable long id) {
+        return ApiResult.success(promotionService.findOrderResponseById(id));
+
+
     }
 }
