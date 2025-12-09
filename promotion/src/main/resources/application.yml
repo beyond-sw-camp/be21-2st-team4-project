@@ -1,46 +1,6 @@
-server:
-  port: 0
-
 spring:
   application:
     name: timedeal-promotion-service
 
-  jpa:
-    properties:
-      hibernate:
-        format_sql: true
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-
-  datasource:
-    url: jdbc:mariadb://localhost:3307/timedealdb
-    username: timedeal
-    password: timedeal
-
-  data:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
-
-eureka:
-  instance:
-    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
-    prefer-ip-address: true
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: http://localhost:8761/eureka
-
-logging:
-  level:
-    org.hibernate.SQL: debug
-
-springdoc:
-  swagger-ui:
-    path: /swagger-ui
-    operations-sorter: method
-    tags-sorter: alpha
-  api-docs:
-    path: /v3/api-docs
+  profiles:
+    active: local

@@ -24,7 +24,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 public class QueueController {
     private final QueueService queueService;
 
-    @PostMapping("/api/v1/queues")
+    @PostMapping
     @Operation(summary = "대기열 참가", description = "사용자가 특정 타임딜 대기열에 참가합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공적으로 대기열에 참여함"),
@@ -41,7 +41,7 @@ public class QueueController {
         return ApiResult.success(queueService.enterQueue(request.timedealId(), request.userId()));
     }
 
-    @DeleteMapping("/api/v1/queues")
+    @DeleteMapping
     @Operation(summary = "대기열 나가기", description = "사용자가 특정 타임딜 대기열에서 나갑니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공적으로 대기열에 참여함"),
@@ -60,7 +60,7 @@ public class QueueController {
         return ApiResult.success(queueService.leaveQueue(timedealId, userId));
     }
 
-    @GetMapping("/api/v1/queues/verify")
+    @GetMapping("/verify")
     @Operation(summary = "대기열 검증", description = "사용자가 특정 타임딜 대기열을 통과했는지 검증합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공적으로 대기열 상태를 확인"),
@@ -81,7 +81,7 @@ public class QueueController {
         return ApiResult.success();
     }
 
-    @GetMapping("/api/v1/queues")
+    @GetMapping
     @Operation(summary = "대기열 상태", description = "사용자가 특정 타임딜 대기열 상태를 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공적으로 대기열 상태를 확인"),
@@ -100,7 +100,7 @@ public class QueueController {
         return ApiResult.success(queueService.getQueueStatus(timedealId, userId));
     }
 
-    @GetMapping(value = "/api/v1/queues/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @Operation(summary = "대기열 SSE 생성 및 반환", description = "대기열 SSE 생성 및 반환")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공적으로 SseEmitter 반환")

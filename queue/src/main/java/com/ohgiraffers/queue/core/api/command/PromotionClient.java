@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(name = "timedeal-promotion-service", configuration = FeignClientConfig.class)
 public interface PromotionClient {
 
-    @GetMapping("/api/v1/promotions/{id}")
-    ApiResult<PromotionResponse> getPromotion(@PathVariable long id);
+    @GetMapping("/{id}")
+    ApiResult<PromotionResponse> findPromotionById(@PathVariable long id);
 
-    @GetMapping("/api/v1/promotions/{promotionStatus}")
-    ApiResult<PromotionListResponse> getActivePromotions(@PathVariable String promotionStatus);
+    @GetMapping("/status/{promotionStatus}")
+    ApiResult<PromotionListResponse> getPromotionsStatusAll(@PathVariable String promotionStatus);
 }

@@ -1,65 +1,6 @@
-server:
-  port: 8000
-
 spring:
   application:
     name: gateway-service
-  cloud:
-    gateway:
-      server:
-        webflux:
-          routes:
-            - id: account-service
-              uri: lb://TIMEDEAL-ACCOUNT-SERVICE
-              predicates:
-                - Path=/api/v1/account/**
-              filters:
-                - RewritePath=/api/v1/account/(?<segment>.*), /$\{segment}
-            - id: queue-service
-              uri: lb://TIMEDEAL-QUEUE-SERVICE
-              predicates:
-                - Path=/api/v1/queues/**
-              filters:
-                - RewritePath=/api/v1/queues/(?<segment>.*), /$\{segment}
-            - id: promotion-service
-              uri: lb://TIMEDEAL-PROMOTION-SERVICE
-              predicates:
-                - Path=/api/v1/promotions/**
-              filters:
-                - RewritePath=/api/v1/promotions/(?<segment>.*), /$\{segment}
-            - id: product-service
-              uri: lb://TIMEDEAL-PRODUCT-SERVICE
-              predicates:
-                - Path=/api/v1/products/**
-              filters:
-                - RewritePath=/api/v1/products/(?<segment>.*), /$\{segment}
-            - id: category-service
-              uri: lb://TIMEDEAL-PRODUCT-SERVICE
-              predicates:
-                - Path=/api/v1/categories/**
-              filters:
-                - RewritePath=/api/v1/categories/(?<segment>.*), /$\{segment}
-            - id: admin-service
-              uri: lb://TIMEDEAL-PRODUCT-SERVICE
-              predicates:
-                - Path=/api/v1/admins/**
-              filters:
-                - RewritePath=/api/v1/admins/(?<segment>.*), /$\{segment}
-            - id: order-service
-              uri: lb://TIMEDEAL-ORDER-SERVICE
-              predicates:
-                - Path=/api/v1/orders/**
-              filters:
-                - RewritePath=/api/v1/orders/(?<segment>.*), /$\{segment}
 
-eureka:
-  instance:
-    prefer-ip-address: true
-  client:
-    fetch-registry: true
-    register-with-eureka: true
-    service-url:
-      defaultZone: http://localhost:8761/eureka
-
-jwt:
-  secret: ${JWT_SECRET:LH9QZL8upsPBfuDY+Dkb1kT9DZIIUSuA2u4O6Lfi3mkEfeWtETpVTcR/8SMZdJWn/xNTuCQBE6rBvDXgnVmscQ==}
+  profiles:
+    active: local
