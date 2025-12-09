@@ -1,4 +1,4 @@
-package com.ohgiraffers.account.jwt;
+package com.ohgiraffers.account.security;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
