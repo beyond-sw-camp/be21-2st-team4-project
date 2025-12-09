@@ -26,8 +26,6 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
-    private final OrderClient orderServiceClient;
-
     @Operation(summary = "로그인", description = "이메일과 비밀번호로 로그인")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "로그인 성공"),
@@ -39,19 +37,19 @@ public class UserController {
         return ApiResult.success(userService.signIn(request.email(), request.password()));
     }
 
-    @Operation(summary = "로그아웃", description = "로그인 id를 받아 로그아웃")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "로그아웃 성공"),
-            @ApiResponse(responseCode = "404", description = "해당 유저를 찾을 수 없음")
-    })
-    @PostMapping("/api/v1/users/signOut")
-    public ApiResult<?> signOut(
-            @Parameter(description = "유저 ID", example = "7")
-            @RequestParam Long userId
-    ){
-        userService.signOut(userId);
-        return ApiResult.success();
-    }
+//    @Operation(summary = "로그아웃", description = "로그인 id를 받아 로그아웃")
+//    @ApiResponses({
+//            @ApiResponse(responseCode = "200", description = "로그아웃 성공"),
+//            @ApiResponse(responseCode = "404", description = "해당 유저를 찾을 수 없음")
+//    })
+//    @PostMapping("/api/v1/users/signOut")
+//    public ApiResult<?> signOut(
+//            @Parameter(description = "유저 ID", example = "7")
+//            @RequestParam Long userId
+//    ){
+//        userService.signOut(userId);
+//        return ApiResult.success();
+//    }
 
     @Operation(summary = "회원가입", description = "이메일, 비밀번호, 이름으로 회원을 생성")
     @ApiResponses({
@@ -87,7 +85,12 @@ public class UserController {
     })
     @GetMapping("/api/v1/users/me")
     public ApiResult<MyPageResponse> getMe(
-            @Parameter(description = "유저 ID", example = "7") @RequestParam Long userId
+
+            @Parameter(name = "X-User-Id", in = ParameterIn.HEADER, required = true)
+            @RequestHeader("X-User-Id") Long userId,
+
+            @Parameter(name = "X-User-Role", in = ParameterIn.HEADER, required = true)
+            @RequestHeader("X-User-Role") String role
     ) {
         return ApiResult.success(userService.getMe(userId));
     }
@@ -115,7 +118,7 @@ public class UserController {
             @Parameter(description = "유저 ID", example = "7")
             @RequestParam Long userId
     ) {
-        return orderServiceClient.getMeOrders(userId);
+        return ApiResult.success(userService.getMeOrders(userId));
     }
 }
 

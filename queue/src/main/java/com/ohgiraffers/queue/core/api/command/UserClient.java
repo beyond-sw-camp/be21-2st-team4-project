@@ -10,6 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(name = "timedeal-account-service", configuration = FeignClientConfig.class)
 public interface UserClient {
 
-    @GetMapping("/promotions/{userId}/grade")
+    @GetMapping("/{userId}/grade")
     ApiResult<String> getUserGrade(@PathVariable("userId") Long userId);
 }

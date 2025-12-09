@@ -1,4 +1,4 @@
-1package com.ohgiraffers.promotion.core.api.command;
+package com.ohgiraffers.promotion.core.api.command;
 
 import com.ohgiraffers.common.support.response.ApiResult;
 import com.ohgiraffers.common.support.response.ResultType;

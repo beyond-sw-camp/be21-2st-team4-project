@@ -1,4 +1,4 @@
-package com.ohgiraffers.account.jwt;
+package com.ohgiraffers.account.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -31,7 +31,6 @@ public class JwtTokenProvider {
         secretKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // access token 생성 메소드 (claim에 userId 추가)
     public String createToken(String username, String role, Long userId) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpiration);
@@ -45,7 +44,6 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    // refresh token 생성 메소드 (claim에 userId 추가)
     public String createRefreshToken(String username, String role, Long userId) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtRefreshExpiration);
@@ -59,24 +57,13 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public long getRefreshExpiration() {
-        return jwtRefreshExpiration;
-    }
-
     public boolean validateToken(String token) {
         try {
             Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
             return true;
-        } catch (SecurityException | MalformedJwtException e) {
+        } catch (JwtException e) {
             throw new BadCredentialsException("Invalid JWT Token", e);
-        } catch (ExpiredJwtException e) {
-            throw new BadCredentialsException("Expired JWT Token", e);
-        } catch (UnsupportedJwtException e) {
-            throw new BadCredentialsException("Unsupported JWT Token", e);
-        } catch (IllegalArgumentException e) {
-            throw new BadCredentialsException("JWT Token claims empty", e);
         }
-
     }
 
     public String getUsernameFromJWT(String token) {
@@ -87,5 +74,4 @@ public class JwtTokenProvider {
                 .getPayload();
         return claims.getSubject();
     }
-
 }
