@@ -16,7 +16,7 @@ public class CommandClient {
     private final UserClient userClient;
 
     public List<Long> getActivePromotions() {
-        ApiResult<PromotionListResponse> response = promotionClient.getActivePromotions("ACTIVE");
+        ApiResult<PromotionListResponse> response = promotionClient.getPromotionsStatusAll("ACTIVE");
         if (response.getResult() == ResultType.ERROR) {
             return null;
         }
@@ -27,7 +27,7 @@ public class CommandClient {
     }
 
     public boolean isValidPromotion(Long timedealId) {
-        ApiResult<PromotionResponse> promotionResponse = promotionClient.getPromotion(timedealId);
+        ApiResult<PromotionResponse> promotionResponse = promotionClient.findPromotionById(timedealId);
         return promotionResponse.getResult() != ResultType.ERROR;
     }
 

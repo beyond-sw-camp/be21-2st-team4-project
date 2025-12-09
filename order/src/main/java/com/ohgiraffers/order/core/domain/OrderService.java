@@ -52,10 +52,10 @@ public class OrderService {
             promotionValidator.validate(promotion);
 
             // 프로모션 재고 차감
-
+            promotionReader.decrease(promotion.id(), orderRequest.getQuantity());
 
             // 유저 잔액 차감
-
+            userReader.decreaseMoney(user.id(), promotion.salePrice());
 
             // Order 생성
             Order order = Order.create(user.id());

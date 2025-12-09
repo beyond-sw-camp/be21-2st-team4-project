@@ -1,34 +1,6 @@
-server:
-  port: 0
-
 spring:
   application:
     name: timedeal-product-service
 
-  jpa:
-    properties:
-      hibernate:
-        format_sql: true
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-
-  datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://localhost:3307/timedealdb
-    username: timedeal
-    password: timedeal
-
-eureka:
-  instance:
-    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
-    prefer-ip-address: true
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: http://localhost:8761/eureka
-
-logging:
-  level:
-    org.hibernate.SQL: debug
+  profiles:
+    active: local

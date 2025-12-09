@@ -2,17 +2,25 @@ package com.ohgiraffers.common.support.response;
 
 
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ohgiraffers.common.support.error.ErrorMessage;
 import com.ohgiraffers.common.support.error.ErrorType;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor(force = true)
 public class ApiResult<S> {
     private final ResultType result;
     private final S data;
     private final ErrorMessage error;
 
-    private ApiResult(ResultType result, S data, ErrorMessage error) {
+    @JsonCreator
+    public ApiResult(
+            @JsonProperty("result") ResultType result,
+            @JsonProperty("data") S data,
+            @JsonProperty("error") ErrorMessage error) {
         this.result = result;
         this.data = data;
         this.error = error;

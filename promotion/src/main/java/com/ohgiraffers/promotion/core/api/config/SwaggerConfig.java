@@ -1,23 +1,53 @@
 package com.ohgiraffers.promotion.core.api.config;
 
-
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
 
 @Configuration
 public class SwaggerConfig {
 
     @Bean
-    public OpenAPI PromoiotnOpenAPI() {
-        return new OpenAPI().info(swaggerInfo());
-    }
+    public OpenAPI openAPI() {
 
-    private Info swaggerInfo() {
-        return new Info()
-                .title("Timedeal Promotion API")
-                .description("Timedeal Promotion Swagger 연동 테스트")
-                .version("v1.0");
+        Info info = new Info()
+                .title("Promotion Service API")
+                .description("Timedeal Promotion Service API")
+                .version("1.0.0");
+
+        String jwtSchemeName = "jwtAuth";
+
+        SecurityRequirement securityRequirement = new SecurityRequirement()
+                .addList(jwtSchemeName);
+
+        Components components = new Components()
+                .addSecuritySchemes(jwtSchemeName,
+                        new SecurityScheme()
+                                .name(jwtSchemeName)
+                                .type(SecurityScheme.Type.HTTP)
+                                .scheme("bearer")
+                                .bearerFormat("JWT")
+                );
+
+        Server gatewayServer = new Server()
+                .url("http://localhost:8000/api/v1/promotions")
+                .description("Gateway Server");
+
+        Server localServer = new Server()
+                .url("/")
+                .description("Direct Access");
+
+        return new OpenAPI()
+                .info(info)
+                .servers(List.of(gatewayServer, localServer))
+                .addSecurityItem(securityRequirement)
+                .components(components);
     }
 }
