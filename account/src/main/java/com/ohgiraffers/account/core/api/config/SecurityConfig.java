@@ -23,55 +23,24 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-
     private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
     private final RestAccessDeniedHandler restAccessDeniedHandler;
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session
+                        -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exception ->
                         exception
                                 .authenticationEntryPoint(restAuthenticationEntryPoint)
                                 .accessDeniedHandler(restAccessDeniedHandler)
                 )
-                .authorizeHttpRequests(auth ->
-
-                        // ✅ 회원가입 / 로그인 / 토큰검증만 인증 없이 허용
-                        auth.requestMatchers(HttpMethod.POST,
-                                        "/api/v1/users/signUp",
-                                        "/api/v1/users/signIn",
-                                        "/api/v1/users/verify"
-                                ).permitAll()
-
-                                // ✅ 마이페이지, 주문조회는 USER 권한 필요
-                                .requestMatchers(HttpMethod.GET,
-                                        "/api/v1/users/me",
-                                        "/api/v1/users/me/orders"
-                                ).hasRole("USER")
-
-                                // ✅ Swagger 허용
-                                .requestMatchers(
-                                        "/swagger-ui.html",
-                                        "/swagger-ui/**",
-                                        "/v3/api-docs/**",
-                                        "/swagger-resources/**"
-                                ).permitAll()
-
-                                // ✅ 그 외는 전부 인증 필요
-                                .anyRequest().authenticated()
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/**").permitAll()
                 )
-
-                // ✅ Gateway 헤더 인증 필터
-                .addFilterBefore(headerAuthenticationFilter(),
-                        UsernamePasswordAuthenticationFilter.class);
+                // 기존 JWT 검증 필터 대신, Gateway가 전달한 헤더를 이용하는 필터 추가
+                .addFilterBefore(headerAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -80,4 +49,5 @@ public class SecurityConfig {
     public HeaderAuthenticationFilter headerAuthenticationFilter() {
         return new HeaderAuthenticationFilter();
     }
+
 }

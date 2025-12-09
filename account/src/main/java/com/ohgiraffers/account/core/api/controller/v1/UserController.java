@@ -18,6 +18,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -32,7 +34,7 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "이메일/비밀번호 불일치"),
             @ApiResponse(responseCode = "404", description = "해당 이메일의 유저가 존재하지 않음")
     })
-    @PostMapping("/api/v1/users/signIn")
+    @PostMapping("/users/signIn")
     public ApiResult<SignInResponse> signIn(@RequestBody LoginRequest request) {
         return ApiResult.success(userService.signIn(request.email(), request.password()));
     }
@@ -56,7 +58,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "회원가입 성공"),
             @ApiResponse(responseCode = "400", description = "이미 존재하는 이메일")
     })
-    @PostMapping("/api/v1/users/signUp")
+    @PostMapping("/users/signUp")
     public ApiResult<?> signUp(@RequestBody @Valid SignUpRequest request){
         userService.signUp(request.email(), request.password(), request.name());
         return ApiResult.success();
@@ -72,7 +74,7 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "토큰 불일치 또는 만료된 토큰"),
             @ApiResponse(responseCode = "404", description = "해당 유저를 찾을 수 없음")
     })
-    @PostMapping("/api/v1/users/verify")
+    @PostMapping("/users/verify")
     public ApiResult<Boolean> verifyToken(@RequestBody VerifyTokenRequest verifyTokenRequest){
         return ApiResult.success(userService.verifyToken(verifyTokenRequest.userId(), verifyTokenRequest.token()));
     }
@@ -83,42 +85,14 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "404", description = "유저를 찾을 수 없음")
     })
-    @GetMapping("/api/v1/users/me")
-    public ApiResult<MyPageResponse> getMe(
-
-            @Parameter(name = "X-User-Id", in = ParameterIn.HEADER, required = true)
-            @RequestHeader("X-User-Id") Long userId,
-
-            @Parameter(name = "X-User-Role", in = ParameterIn.HEADER, required = true)
-            @RequestHeader("X-User-Role") String role
-    ) {
-        return ApiResult.success(userService.getMe(userId));
+    @GetMapping("/users/me")
+    public ApiResult<MyPageResponse> getMe(@AuthenticationPrincipal String userId) {
+        return ApiResult.success(userService.getMe(Long.parseLong(userId)));
     }
 
-//    @Operation(summary = "주문내역 조회", description = "유저의 마이페이지 주문내역 조회")
-//    @ApiResponses({
-//            @ApiResponse(responseCode = "200", description = "조회 성공"),
-//            @ApiResponse(responseCode = "404", description = "유저 또는 주문내역을 찾을 수 없음")
-//    })
-//    @GetMapping("/api/v1/users/me/orders")
-//    public ApiResult<OrderDetailResponse> getMeOrders(
-//            @Parameter(description = "유저 ID", example = "7") @RequestParam Long userId
-//    ) {
-//        return ApiResult.success(userService.getMeOrders(userId));
-//    }
-
-    @GetMapping("/api/v1/users/me/orders")
-    public ApiResult<OrderDetailResponse> getMeOrders(
-            @Parameter(name = "X-User-Id", in = ParameterIn.HEADER, required = true)
-            @RequestHeader("X-User-Id") String headerUserId,
-
-            @Parameter(name = "X-User-Role", in = ParameterIn.HEADER, required = true)
-            @RequestHeader("X-User-Role") String headerRole,
-
-            @Parameter(description = "유저 ID", example = "7")
-            @RequestParam Long userId
-    ) {
-        return ApiResult.success(userService.getMeOrders(userId));
+    @GetMapping("/users/me/orders")
+    public ApiResult<OrderDetailResponse> getMeOrders(@AuthenticationPrincipal String userId) {
+        return ApiResult.success(userService.getMeOrders(Long.parseLong(userId)));
     }
 }
 

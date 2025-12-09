@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -32,13 +33,12 @@ public class QueueController {
             @ApiResponse(responseCode = "404", description = "타임딜을 찾을 수 없음")
     })
     public ApiResult<QueueStatusResponse> enterQueue(
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "대기열 참가 요청 정보",
-                    required = true
-            )
-            @RequestBody @Valid QueueEnterRequest request
+            @AuthenticationPrincipal String userId,
+            @Parameter(description = "타임딜 아이디", example = "1", required = true)
+            @Positive
+            @RequestParam(value = "timedealId") Long timedealId
     ) {
-        return ApiResult.success(queueService.enterQueue(request.timedealId(), request.userId()));
+        return ApiResult.success(queueService.enterQueue(timedealId, Long.parseLong(userId)));
     }
 
     @DeleteMapping
@@ -49,15 +49,13 @@ public class QueueController {
             @ApiResponse(responseCode = "404", description = "타임딜을 찾을 수 없음")
     })
     public ApiResult<Boolean> leaveQueue(
+            @AuthenticationPrincipal String userId,
             @Parameter(description = "타임딜 아이디", example = "1", required = true)
             @Positive
-            @RequestParam(value = "timedealId") Long timedealId,
+            @RequestParam(value = "timedealId") Long timedealId
 
-            @Parameter(description = "유저 아이디", example = "1", required = true)
-            @Positive
-            @RequestParam(value = "userId") Long userId
     ) {
-        return ApiResult.success(queueService.leaveQueue(timedealId, userId));
+        return ApiResult.success(queueService.leaveQueue(timedealId, Long.parseLong(userId)));
     }
 
     @GetMapping("/verify")
@@ -69,15 +67,12 @@ public class QueueController {
             @ApiResponse(responseCode = "410", description = "유효기간이 만료되었음")
     })
     public ApiResult<?> verifyQueue(
+            @AuthenticationPrincipal String userId,
             @Parameter(description = "타임딜 아이디", example = "1", required = true)
             @Positive
-            @RequestParam(value = "timedealId") Long timedealId,
-
-            @Parameter(description = "유저 아이디", example = "1", required = true)
-            @Positive
-            @RequestParam(value = "userId") Long userId
+            @RequestParam(value = "timedealId") Long timedealId
     ) {
-        queueService.verifyQueue(timedealId, userId);
+        queueService.verifyQueue(timedealId, Long.parseLong(userId));
         return ApiResult.success();
     }
 
@@ -89,15 +84,12 @@ public class QueueController {
             @ApiResponse(responseCode = "404", description = "대기열을 찾을 수 없음")
     })
     public ApiResult<QueueStatusResponse> getQueueStatus(
+            @AuthenticationPrincipal String userId,
             @Parameter(description = "타임딜 아이디", example = "1", required = true)
             @Positive
-            @RequestParam(value = "timedealId") Long timedealId,
-
-            @Parameter(description = "유저 아이디", example = "1", required = true)
-            @Positive
-            @RequestParam(value = "userId") Long userId
+            @RequestParam(value = "timedealId") Long timedealId
     ) {
-        return ApiResult.success(queueService.getQueueStatus(timedealId, userId));
+        return ApiResult.success(queueService.getQueueStatus(timedealId, Long.parseLong(userId)));
     }
 
     @GetMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
@@ -106,10 +98,8 @@ public class QueueController {
             @ApiResponse(responseCode = "200", description = "성공적으로 SseEmitter 반환")
     })
     public SseEmitter getQueueSubscribe(
-            @Parameter(description = "유저 아이디", example = "1", required = true)
-            @Positive
-            @RequestParam(value = "userId") Long userId
+            @AuthenticationPrincipal String userId
     ) {
-        return queueService.getQueueSubscribe(userId);
+        return queueService.getQueueSubscribe(Long.parseLong(userId));
     }
 }
