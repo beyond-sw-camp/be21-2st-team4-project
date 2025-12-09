@@ -23,7 +23,7 @@ public interface PromotionRepository extends JpaRepository<Promotion,Long> {
 
     List<RedisPromotionResponse> findAllByPromotionStatus(PromotionStatus promotionStatus);
 
-    List<PromotionResponse> findPromotionByPromotionStatus(PromotionStatus promotionStatus);
+    List<Promotion> findByPromotionStatus(PromotionStatus promotionStatus);
 
     PromotionStatus findPromotionStatusById(Long id);
 
