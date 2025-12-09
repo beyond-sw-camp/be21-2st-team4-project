@@ -1,6 +1,9 @@
 package com.ohgiraffers.account.core.api.config;
 
-import com.ohgiraffers.account.jwt.*;
+
+import com.ohgiraffers.account.security.HeaderAuthenticationFilter;
+import com.ohgiraffers.account.security.RestAccessDeniedHandler;
+import com.ohgiraffers.account.security.RestAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,18 +35,43 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(session
-                        -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exception ->
                         exception
                                 .authenticationEntryPoint(restAuthenticationEntryPoint)
                                 .accessDeniedHandler(restAccessDeniedHandler)
                 )
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/**").permitAll()
+                .authorizeHttpRequests(auth ->
+
+                        // ✅ 회원가입 / 로그인 / 토큰검증만 인증 없이 허용
+                        auth.requestMatchers(HttpMethod.POST,
+                                        "/api/v1/users/signUp",
+                                        "/api/v1/users/signIn",
+                                        "/api/v1/users/verify"
+                                ).permitAll()
+
+                                // ✅ 마이페이지, 주문조회는 USER 권한 필요
+                                .requestMatchers(HttpMethod.GET,
+                                        "/api/v1/users/me",
+                                        "/api/v1/users/me/orders"
+                                ).hasRole("USER")
+
+                                // ✅ Swagger 허용
+                                .requestMatchers(
+                                        "/swagger-ui.html",
+                                        "/swagger-ui/**",
+                                        "/v3/api-docs/**",
+                                        "/swagger-resources/**"
+                                ).permitAll()
+
+                                // ✅ 그 외는 전부 인증 필요
+                                .anyRequest().authenticated()
                 )
-                // 기존 JWT 검증 필터 대신, Gateway가 전달한 헤더를 이용하는 필터 추가
-                .addFilterBefore(headerAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+
+                // ✅ Gateway 헤더 인증 필터
+                .addFilterBefore(headerAuthenticationFilter(),
+                        UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -52,5 +80,4 @@ public class SecurityConfig {
     public HeaderAuthenticationFilter headerAuthenticationFilter() {
         return new HeaderAuthenticationFilter();
     }
-
 }

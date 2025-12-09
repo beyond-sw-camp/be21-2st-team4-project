@@ -1,4 +1,4 @@
-package com.ohgiraffers.account.jwt;
+package com.ohgiraffers.account.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -29,25 +29,16 @@ public class HeaderAuthenticationFilter extends OncePerRequestFilter {
         log.info("role : {}", role);
 
         if (userId != null && role != null) {
-            // 이미 Gateway에서 검증된 정보로 인증 객체 구성
+            // ROLE_ 접두어를 붙이고 대문자로 통일
+            String authority = "ROLE_" + role.toUpperCase();
             PreAuthenticatedAuthenticationToken authentication =
-                    new PreAuthenticatedAuthenticationToken(userId, null,
-                            List.of(new SimpleGrantedAuthority(role)));
+                    new PreAuthenticatedAuthenticationToken(
+                            userId, null,
+                            List.of(new SimpleGrantedAuthority(authority))
+                    );
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
+
         filterChain.doFilter(request, response);
     }
-//    @Override
-//    protected boolean shouldNotFilter(HttpServletRequest request) {
-//        String path = request.getServletPath();
-//
-//        return path.startsWith("/swagger-ui")
-//                || path.startsWith("/v3/api-docs")
-//                || path.startsWith("/swagger-resources")
-//                || path.startsWith("/api/v1/users/signUp")
-//                || path.startsWith("/api/v1/users/signIn")
-//                || path.startsWith("/api/v1/users/signOut")
-//                || path.startsWith("/api/v1/users/verify");
-//    }
-
 }
