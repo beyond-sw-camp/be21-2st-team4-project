@@ -1,5 +1,6 @@
 package com.ohgiraffers.account.core.api.controller.v1.response;
 
+import com.ohgiraffers.timedeal.core.api.controller.v1.response.MyPageOrderResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
