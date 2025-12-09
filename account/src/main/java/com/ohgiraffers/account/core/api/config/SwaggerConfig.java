@@ -5,8 +5,11 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
 
 @Configuration
 public class SwaggerConfig {
@@ -14,20 +17,16 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI openAPI() {
 
-        // ✅ 기존 네가 쓰던 Info 유지
         Info info = new Info()
-                .title("Timedeal API")
-                .description("Timedeal Swagger 연동 테스트")
+                .title("Account Service API")
+                .description("Timedeal Account Service API")
                 .version("1.0.0");
 
-        // ✅ JWT 인증 스키마 이름
         String jwtSchemeName = "jwtAuth";
 
-        // ✅ 전역 Security 적용
         SecurityRequirement securityRequirement = new SecurityRequirement()
                 .addList(jwtSchemeName);
 
-        // ✅ Authorization: Bearer 토큰 설정
         Components components = new Components()
                 .addSecuritySchemes(jwtSchemeName,
                         new SecurityScheme()
@@ -37,8 +36,18 @@ public class SwaggerConfig {
                                 .bearerFormat("JWT")
                 );
 
+        // Gateway를 통한 API 호출을 위한 서버 설정
+        Server gatewayServer = new Server()
+                .url("http://localhost:8000/api/v1/account")
+                .description("Gateway Server");
+
+        Server localServer = new Server()
+                .url("/")
+                .description("Direct Access");
+
         return new OpenAPI()
                 .info(info)
+                .servers(List.of(gatewayServer, localServer))
                 .addSecurityItem(securityRequirement)
                 .components(components);
     }
