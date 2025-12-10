@@ -15,7 +15,7 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     // 카테고리 등록
-    @PostMapping
+    @PostMapping("/category")
     public CategoryResponse createCategory(
             @AuthenticationPrincipal String adminId,
             @RequestBody CategoryRequest request
@@ -24,13 +24,13 @@ public class CategoryController {
     }
 
     // 카테고리 수정
-    @PutMapping("/{id}")
+    @PutMapping("/category/{id}")
     public CategoryResponse updateCategory(@AuthenticationPrincipal String adminId, @PathVariable Long id, @RequestBody CategoryRequest request) {
         return categoryService.updateCategory(id, request);
     }
 
     // 카테고리 삭제
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/category/{id}")
     public void deleteCategory(@AuthenticationPrincipal String adminId, @PathVariable Long id) {
         categoryService.deleteCategory(id);
     }
