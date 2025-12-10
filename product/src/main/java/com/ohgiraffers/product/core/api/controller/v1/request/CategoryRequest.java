@@ -1,11 +1,8 @@
 package com.ohgiraffers.product.core.api.controller.v1.request;
 
-import lombok.Getter;
-import lombok.Setter;
+public record CategoryRequest(
+        String name,
+        String status       // "ACTIVE" 또는 "DELETED"
+) {
 
-@Getter
-@Setter
-public class CategoryRequest {
-    private String name;      // 카테고리 이름
-    private String status;    // "ACTIVE" 또는 "DELETED"
 }

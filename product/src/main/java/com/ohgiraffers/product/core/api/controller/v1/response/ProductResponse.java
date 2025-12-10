@@ -1,25 +1,15 @@
 package com.ohgiraffers.product.core.api.controller.v1.response;
 
-import com.ohgiraffers.timedeal.core.domain.Product;
+import com.ohgiraffers.product.core.domain.Product;
 
 public record ProductResponse(
         Long id,
+        String companyName,
+        String categoryName,
         String name,
         String description,
         Integer price,
-        String imageUrl,
-        Long categoryId,
-        Long adminId
+        String imageUrl
 ) {
-    public static ProductResponse from(Product product) {
-        return new ProductResponse(
-                product.getId(),
-                product.getName(),
-                product.getDescription(),
-                product.getPrice(),
-                product.getImageUrl(),
-                product.getCategory() != null ? product.getCategory().getId() : null,
-                product.getAdmin() != null ? product.getAdmin().getId() : null
-        );
-    }
+
 }
