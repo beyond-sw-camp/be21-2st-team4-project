@@ -2,6 +2,7 @@ package com.ohgiraffers.account.core.api.controller.v1;
 
 import com.ohgiraffers.account.core.api.controller.v1.request.AdminLoginRequest;
 import com.ohgiraffers.account.core.api.controller.v1.request.AdminRequest;
+import com.ohgiraffers.account.core.api.controller.v1.response.AdminResponse;
 import com.ohgiraffers.account.core.api.controller.v1.response.AdminSignInResponse;
 import com.ohgiraffers.account.core.domain.AdminService;
 import com.ohgiraffers.common.support.response.ApiResult;
@@ -10,9 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,5 +42,9 @@ public class AdminController {
         return ApiResult.success(adminService.adminSignIn(request.email(), request.password()));
     }
 
+    @GetMapping("/admin/{id}")
+    public ApiResult<AdminResponse> getAdmin(@PathVariable Long id) {
+        ApiResult.success(adminService.getAdmin(id));
+    }
 
 }

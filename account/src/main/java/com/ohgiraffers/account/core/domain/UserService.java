@@ -1,10 +1,7 @@
 package com.ohgiraffers.account.core.domain;
 
 import com.ohgiraffers.account.core.api.command.CommandClient;
-import com.ohgiraffers.account.core.api.controller.v1.response.MyPageOrderResponse;
-import com.ohgiraffers.account.core.api.controller.v1.response.MyPageResponse;
-import com.ohgiraffers.account.core.api.controller.v1.response.OrderDetailResponse;
-import com.ohgiraffers.account.core.api.controller.v1.response.SignInResponse;
+import com.ohgiraffers.account.core.api.controller.v1.response.*;
 import com.ohgiraffers.account.security.JwtTokenProvider;
 import com.ohgiraffers.account.storage.UserRepository;
 import com.ohgiraffers.common.support.error.CoreException;
@@ -12,6 +9,7 @@ import com.ohgiraffers.common.support.error.ErrorType;
 
 
 import com.ohgiraffers.common.support.response.ApiResult;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -97,6 +95,21 @@ public class UserService {
     public OrderDetailResponse getMeOrders(Long userId) {
         List<MyPageOrderResponse> meOrders = commandClient.getMeOrders(userId);
         return new OrderDetailResponse(meOrders);
+    }
+
+    public UserResponse getUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
+
+        return new UserResponse(user.getId(), user.getEmail(), user.getMoney());
+    }
+
+    @Transactional
+    public void decreaseMoney(Long userId, Integer price) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
+
+        user.decreaseMoney(price);
     }
 
 //    public OrderDetailResponse getMeOrders(Long userId) {

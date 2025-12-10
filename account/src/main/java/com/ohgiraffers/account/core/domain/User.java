@@ -42,7 +42,7 @@ public class User extends BaseEntity {
         this.password = password;
         this.name = name;
     }
-    public void decreaseMoney(Long salePrice) {
+    public void decreaseMoney(Integer salePrice) {
         if(this.money < salePrice) {
             throw new CoreException(ErrorType.DEFAULT_ERROR);
         }

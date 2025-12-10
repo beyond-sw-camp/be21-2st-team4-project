@@ -6,6 +6,7 @@ import com.ohgiraffers.account.core.api.controller.v1.request.VerifyTokenRequest
 import com.ohgiraffers.account.core.api.controller.v1.response.MyPageResponse;
 import com.ohgiraffers.account.core.api.controller.v1.response.OrderDetailResponse;
 import com.ohgiraffers.account.core.api.controller.v1.response.SignInResponse;
+import com.ohgiraffers.account.core.api.controller.v1.response.UserResponse;
 import com.ohgiraffers.account.core.domain.UserService;
 import com.ohgiraffers.common.support.response.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
@@ -91,6 +92,17 @@ public class UserController {
     @GetMapping("/users/me/orders")
     public ApiResult<OrderDetailResponse> getMeOrders(@AuthenticationPrincipal String userId) {
         return ApiResult.success(userService.getMeOrders(Long.parseLong(userId)));
+    }
+
+    @GetMapping("/users/{id}")
+    ApiResult<UserResponse> getUser(Long id) {
+        return ApiResult.success(userService.getUser(id));
+    }
+
+    @GetMapping("/users/decreaseMoney")
+    ApiResult<?> decreaseMoney(@RequestParam Long id, @RequestParam Integer price) {
+        userService.decreaseMoney(id, price);
+        return ApiResult.success();
     }
 }
 

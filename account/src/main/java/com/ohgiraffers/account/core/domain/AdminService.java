@@ -53,4 +53,10 @@ public class AdminService {
 
         return new AdminSignInResponse(admin.getId(), accessToken);
     }
+
+    public AdminResponse getAdmin(Long id) {
+        Admin admin = adminRepository.findById(id)
+                .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
+        return new AdminResponse(admin.getId(), admin.getEmail(), admin.getCompany());
+    }
 }
