@@ -5,16 +5,20 @@ import com.ohgiraffers.order.core.api.command.common.PromotionStatus;
 
 import java.time.LocalDateTime;
 
-public record PromotionResponse(
+public record PromotionResponse (
         Long id,
-        Long productId,
+        String company,
+        String productName,
+        Integer originalPrice,
         Integer salePrice,
+        Double discountRate,
         Integer totalQuantity,
         Integer soldQuantity,
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime startTime,
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime endTime,
-        PromotionStatus promotionStatus
-) {
+        String productImageUrl
+        ){
+
 }

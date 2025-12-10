@@ -29,7 +29,7 @@ public class OrderService {
     private final QueueReader queueReader;
 
     @Transactional
-    public void createOrder(OrderRequest orderRequest) {
+    public void createOrder(Long userId, OrderRequest orderRequest) {
         
         // 요청 유효성 검증
         orderRequest.validate();
@@ -41,7 +41,7 @@ public class OrderService {
                 throw new CoreException(ErrorType.DEFAULT_ERROR);
             }
 
-            var user = userReader.getUser(orderRequest.getUserId());
+            var user = userReader.getUser(userId);
             var promotion = promotionReader.getPromotion(orderRequest.getPromotionId());
             var product = productReader.getProduct(promotion.productId());
 

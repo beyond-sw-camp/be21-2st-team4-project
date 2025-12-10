@@ -95,7 +95,7 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    ApiResult<UserResponse> getUser(Long id) {
+    ApiResult<UserResponse> getUser(@PathVariable Long id) {
         return ApiResult.success(userService.getUser(id));
     }
 

@@ -24,8 +24,10 @@ public class OrderController {
 
     @Operation(summary="주문 생성")
     @PostMapping
-    public ApiResult<?> createOrder(@RequestBody @Valid OrderRequest request) {
-        orderService.createOrder(request);
+    public ApiResult<?> createOrder(
+            @AuthenticationPrincipal String userId,
+            @RequestBody @Valid OrderRequest request) {
+        orderService.createOrder(Long.parseLong(userId), request);
         return ApiResult.success();
     }
 

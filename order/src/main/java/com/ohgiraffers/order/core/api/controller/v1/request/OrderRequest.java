@@ -23,10 +23,6 @@ public class OrderRequest {
     @Schema(description = "구매 수량")
     private Integer quantity;
 
-    @NotNull
-    @Schema(description = "구매자 Id")
-    private Long userId;
-
     public void validate() {
         if (promotionId == null) {
             throw new CoreException(ErrorType.DEFAULT_ERROR);
