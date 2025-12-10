@@ -17,7 +17,7 @@ public class CommandClient {
     private final AccountClinet accountClinet;
 
     public ProductResponse getProduct(Long id) {
-        ApiResult<ProductResponse> response = productClient.getProduct(id);
+        ApiResult<ProductResponse> response = productClient.findById(id);
         if (response.getResult() == ResultType.ERROR) {
             return null;
         }
