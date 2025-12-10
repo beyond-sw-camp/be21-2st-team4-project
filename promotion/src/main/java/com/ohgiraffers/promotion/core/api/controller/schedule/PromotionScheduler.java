@@ -2,10 +2,12 @@ package com.ohgiraffers.promotion.core.api.controller.schedule;
 
 import com.ohgiraffers.common.constants.TimedealKeys;
 import com.ohgiraffers.promotion.core.api.controller.v1.response.PromotionListResponse;
+import com.ohgiraffers.promotion.core.api.controller.v1.response.PromotionResponse;
 import com.ohgiraffers.promotion.core.api.controller.v1.response.RedisPromotionResponse;
 import static com.ohgiraffers.promotion.core.enums.PromotionStatus.*;
 import com.ohgiraffers.promotion.core.domain.Promotion;
 import com.ohgiraffers.promotion.core.domain.PromotionService;
+import com.ohgiraffers.promotion.storage.PromotionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -20,6 +22,7 @@ import java.util.List;
 public class PromotionScheduler {
     private final StringRedisTemplate stringRedisTemplate;
     private final PromotionService promotionService;
+    private final PromotionRepository promotionRepository;
 
     @Scheduled(fixedRate = 6000)
     public void updatePromotionSchedule() {
@@ -48,18 +51,19 @@ public class PromotionScheduler {
         List<RedisPromotionResponse> schedulePromotion =  promotionService.returnSchedule(ACTIVE);
         List<RedisPromotionResponse> activePromotion = promotionService.returnSchedule(ENDED);
         for(RedisPromotionResponse promotion : schedulePromotion){
-            if(promotionService.findPromotionById(promotion.id()).startTime().isBefore(LocalDateTime.now())) {
+            if(promotionRepository.findPromotionById(promotion.id()).getStartTime().isBefore(LocalDateTime.now())) {
                 String key = TimedealKeys.setPromotion(promotion.id());
                 Integer value = promotion.totalQuantity();
                 stringRedisTemplate.opsForValue().set(key, String.valueOf(value));
             }
         }
         for(RedisPromotionResponse promotion : activePromotion){
-            if(promotionService.findPromotionById(promotion.id()).endTime().isBefore(LocalDateTime.now())) {
+            if(promotionRepository.findPromotionById(promotion.id()).getEndTime().isBefore(LocalDateTime.now())) {
                 String key = TimedealKeys.setPromotion(promotion.id());
                 stringRedisTemplate.delete(key);
             }
         }
+        // List<promotionResponse> start, end
     }
 
     @Scheduled(fixedRate = 100000)
