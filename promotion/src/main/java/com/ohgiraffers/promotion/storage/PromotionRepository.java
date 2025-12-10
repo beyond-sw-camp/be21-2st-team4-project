@@ -21,7 +21,7 @@ public interface PromotionRepository extends JpaRepository<Promotion,Long> {
 
     Promotion findPromotionById(Long id);
 
-    List<RedisPromotionResponse> findAllByPromotionStatus(PromotionStatus promotionStatus);
+    List<Promotion> findAllByPromotionStatus(PromotionStatus promotionStatus);
 
     List<Promotion> findByPromotionStatus(PromotionStatus promotionStatus);
 
@@ -29,7 +29,7 @@ public interface PromotionRepository extends JpaRepository<Promotion,Long> {
 
 
     @Query("""
-    select new com.ohgiraffers.promotion.core.api.controller.v1.response.PromotionResponse(
+    select
          pm.id
         ,pm.adminId
         ,pm.productId
@@ -37,7 +37,7 @@ public interface PromotionRepository extends JpaRepository<Promotion,Long> {
         ,pm.discountRate
         ,pm.totalQuantity
         ,pm.startTime
-        ,pm.endTime)
+        ,pm.endTime
     from Promotion pm
 """)
     List<PromotionResponse> findAllPromotions();
@@ -62,7 +62,9 @@ public interface PromotionRepository extends JpaRepository<Promotion,Long> {
     set soldQuantity = :soldQuantity
     where id = :id
 """)
-    void updatePromotionSoldQuantity(Long id, Long soldQuantity);
+    void updatePromotionSoldQuantity(Long id, int soldQuantity);
 
-    Long findSoldQuantityById(Long id);
+    int findSoldQuantityById(Long id);
+
+
 }

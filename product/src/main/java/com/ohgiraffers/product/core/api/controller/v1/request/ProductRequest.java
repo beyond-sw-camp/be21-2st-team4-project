@@ -1,15 +1,11 @@
 package com.ohgiraffers.product.core.api.controller.v1.request;
 
-import lombok.Getter;
-import lombok.Setter;
+public record ProductRequest(
+        Long categoryId,
+        String name,
+        String description,
+        Integer price,
+        String imageUrl
+) {
 
-@Getter
-@Setter
-public class ProductRequest {
-    private String name;
-    private String description;
-    private Integer price;
-    private String imageUrl;
-    private Long categoryId;
-    private Long adminId;
 }

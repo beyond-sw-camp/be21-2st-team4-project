@@ -43,4 +43,5 @@ public class TimedealKeys {
     public static String historyQueue(Long timedealId) {
         return PREFIX + ":" + timedealId + ":history-queue";
     }
+
 }

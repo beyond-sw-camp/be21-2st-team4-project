@@ -1,5 +1,6 @@
 package com.ohgiraffers.promotion.core.domain;
 
+import com.ohgiraffers.common.constants.TimedealKeys;
 import com.ohgiraffers.common.support.response.ResultType;
 import com.ohgiraffers.promotion.core.api.controller.v1.request.OrderRequest;
 import com.ohgiraffers.promotion.core.api.controller.v1.request.PromotionRequest;
@@ -11,6 +12,7 @@ import com.ohgiraffers.promotion.core.enums.PromotionStatus;
 import com.ohgiraffers.promotion.storage.PromotionRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -21,10 +23,16 @@ import java.util.concurrent.atomic.AtomicReference;
 @RequiredArgsConstructor
 public class PromotionService {
     private final PromotionRepository promotionRepository;
+    private final StringRedisTemplate stringRedisTemplate;
 
+    @Transactional
     public void updateSoldQuantity(OrderRequest orderRequest) {
-        Long promotionSoldQuantity = promotionRepository.findSoldQuantityById(orderRequest.getId());
-        promotionRepository.updatePromotionSoldQuantity(orderRequest.getId(), orderRequest.getSoldQuantity() + promotionSoldQuantity);
+        Promotion promotion = promotionRepository.findPromotionById(orderRequest.getId());
+        int soldQuantity = orderRequest.getSoldQuantity() + promotionRepository.findSoldQuantityById(orderRequest.getId());
+
+        promotionRepository.updatePromotionSoldQuantity(orderRequest.getId(), soldQuantity);
+        String key = TimedealKeys.setPromotion(promotion.getId());
+        stringRedisTemplate.opsForValue().decrement(key, orderRequest.getSoldQuantity());
     }
 
     ;
@@ -137,12 +145,17 @@ public class PromotionService {
     }
 
     public List<RedisPromotionResponse> returnSchedule(PromotionStatus promotionStatus) {
-        return promotionRepository.findAllByPromotionStatus(PromotionStatus.SCHEDULER);
+        List<Promotion> promotion = promotionRepository.findAllByPromotionStatus(promotionStatus);
+        return promotion.stream().map(p -> new RedisPromotionResponse(
+                p.getId(),
+                p.getTotalQuantity()
+        ))
+                .toList();
     }
 
-    public List<RedisPromotionResponse> returnActive(PromotionStatus promotionStatus) {
+/*    public List<RedisPromotionResponse> returnActive(PromotionStatus promotionStatus) {
         return promotionRepository.findAllByPromotionStatus(PromotionStatus.ACTIVE);
-    }
+    }*/
 
     @Transactional
     public void updatePromotionStatus(Long id, PromotionStatus promotionStatus) {
@@ -171,5 +184,7 @@ public class PromotionService {
         Promotion promotion = promotionRepository.findPromotionById(id);
         return new OrderResponse(promotion.getId(), promotion.getSalePrice(), promotion.getTotalQuantity(), promotion.getPromotionStatus());
     }
+
+
 }
 

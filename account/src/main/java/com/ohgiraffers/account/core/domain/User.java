@@ -19,7 +19,7 @@ public class User extends BaseEntity {
     @Column(name = "email", length = 50, nullable = false, unique = true)
     private String email;
 
-    @Column(name = "password", length = 50, nullable = false)
+    @Column(name = "password", length = 100, nullable = false)
     private String password;
 
     @Column(name = "money")
@@ -42,7 +42,7 @@ public class User extends BaseEntity {
         this.password = password;
         this.name = name;
     }
-    public void decreaseMoney(Long salePrice) {
+    public void decreaseMoney(Integer salePrice) {
         if(this.money < salePrice) {
             throw new CoreException(ErrorType.DEFAULT_ERROR);
         }

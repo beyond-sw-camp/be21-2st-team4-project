@@ -12,9 +12,6 @@ public interface OrderClient {
 
     @GetMapping("/api/v1/orders/me/orders")
     ApiResult<OrderDetailResponse> getMeOrders(
-            @RequestParam Long userId,
-            @RequestHeader("X-User-Id") String userIdHeader,
-            @RequestHeader("X-User-Role") String roleHeader,
-            @RequestHeader("Authorization") String authorization
+            @RequestParam Long userId
     );
 }
