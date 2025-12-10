@@ -41,8 +41,8 @@ public class Promotion extends BaseEntity {
     @Column(name = "total_quantity")
     private Integer totalQuantity;
 
-    @Column(name = "sold_quantity")
-    private Integer soldQuantity;
+    @Column(name = "sold_quantity" ,  nullable = false)
+    private Integer soldQuantity = 0;
 
     @Column(name = "promotion_status")
     @Enumerated(EnumType.STRING)
