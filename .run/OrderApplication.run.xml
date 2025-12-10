@@ -1,9 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="OrderApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-    <module name="Timedeal.order.main" />
-    <option name="SPRING_BOOT_MAIN_CLASS" value="com.ohgiraffers.order.OrderApplication" />
-    <method v="2">
-      <option name="Make" enabled="true" />
-    </method>
-  </configuration>
-</component>
