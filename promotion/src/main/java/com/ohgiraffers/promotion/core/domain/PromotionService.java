@@ -124,7 +124,8 @@ public class PromotionService {
                     promotion.getSoldQuantity(),
                     promotion.getStartTime(),
                     promotion.getEndTime(),
-                    product.imageUrl()
+                    product.imageUrl(),
+                    promotion.getPromotionStatus()
             ));
         }
         return result;
@@ -155,7 +156,8 @@ public class PromotionService {
                     promotion.getSoldQuantity(),
                     promotion.getStartTime(),
                     promotion.getEndTime(),
-                    product.imageUrl()
+                    product.imageUrl(),
+                    promotion.getPromotionStatus()
             ));
         }
         PromotionListResponse promotionListResponse = new PromotionListResponse(result);
@@ -197,7 +199,8 @@ public class PromotionService {
                 promotion.getSoldQuantity(),
                 promotion.getStartTime(),
                 promotion.getEndTime(),
-                product.imageUrl()
+                product.imageUrl(),
+                promotion.getPromotionStatus()
         );
     }
 

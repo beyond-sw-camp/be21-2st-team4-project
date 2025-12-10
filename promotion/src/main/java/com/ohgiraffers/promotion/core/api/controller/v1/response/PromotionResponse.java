@@ -1,6 +1,7 @@
 package com.ohgiraffers.promotion.core.api.controller.v1.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ohgiraffers.promotion.core.enums.PromotionStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
@@ -19,7 +20,8 @@ public record PromotionResponse (
         LocalDateTime startTime,
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime endTime,
-        String productImageUrl
+        String productImageUrl,
+        PromotionStatus promotionStatus
         ){
 
 }
