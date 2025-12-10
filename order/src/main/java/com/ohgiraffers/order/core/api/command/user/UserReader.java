@@ -22,4 +22,12 @@ public class UserReader {
                 () -> new CoreException(ErrorType.DEFAULT_ERROR)
         );
     }
+
+    public void decreaseMoney(Long id, Integer price) {
+
+        apiResult.unwrap(
+            client.decreaseMoney(id, price),
+            () -> new CoreException(ErrorType.DEFAULT_ERROR)
+        );
+    }
 }

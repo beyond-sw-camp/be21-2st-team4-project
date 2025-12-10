@@ -3,7 +3,6 @@ package com.ohgiraffers.order.core.domain;
 import com.ohgiraffers.common.entity.BaseEntity;
 import com.ohgiraffers.order.core.api.command.response.ProductResponse;
 import com.ohgiraffers.order.core.api.command.response.PromotionResponse;
-import com.ohgiraffers.order.core.enums.OrderStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -42,7 +41,7 @@ public class Order extends BaseEntity {
         return order;
     }
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.PERSIST)
+    @OneToMany
     private List<OrderDetail> details = new ArrayList<>();
 
     public void addDetail(PromotionResponse promotion, ProductResponse product, Integer quantity) {

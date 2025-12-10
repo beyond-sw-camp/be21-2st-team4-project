@@ -1,9 +1,8 @@
 package com.ohgiraffers.account.core.api.controller.v1.response;
 
-public record AdminResponse(
+public record UserResponse(
         Long id,
         String email,
-        String company
+        Integer money
 ) {
-
 }

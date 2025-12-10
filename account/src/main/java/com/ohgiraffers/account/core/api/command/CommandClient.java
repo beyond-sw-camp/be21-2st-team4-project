@@ -14,23 +14,10 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class CommandClient {
-
     private final OrderClient orderClient;
-    private final HttpServletRequest request; // 현재 요청 주입
-
     public List<MyPageOrderResponse> getMeOrders(Long userId) {
-        String userIdHeader = request.getHeader("X-User-Id");
-        String roleHeader = request.getHeader("X-User-Role");
-        String authorization = request.getHeader("Authorization");
-
-        ApiResult<OrderDetailResponse> response = orderClient.getMeOrders(
-                userId,
-                userIdHeader,
-                roleHeader,
-                authorization
-        );
-
-        if (response.getResult() == ResultType.ERROR) {
+        ApiResult<OrderDetailResponse> response = orderClient.getMeOrders(userId);
+        if(response.getResult() == ResultType.ERROR) {
             return null;
         }
         return response.getData().myPageOrderResponseList();

@@ -21,6 +21,17 @@ public class HeaderAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+
+        String uri = request.getRequestURI();
+        if (
+                uri.equals("/users/signUp") ||
+                        uri.equals("/users/signIn") ||
+                        uri.equals("admin/signIn") ||
+                        uri.equals("admin/signUp")
+        ) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         // API Gateway가 전달한 헤더 읽기
         String userId = request.getHeader("X-User-Id");
         String role = request.getHeader("X-User-Role");

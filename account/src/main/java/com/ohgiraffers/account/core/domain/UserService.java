@@ -1,10 +1,7 @@
 package com.ohgiraffers.account.core.domain;
 
 import com.ohgiraffers.account.core.api.command.CommandClient;
-import com.ohgiraffers.account.core.api.controller.v1.response.MyPageOrderResponse;
-import com.ohgiraffers.account.core.api.controller.v1.response.MyPageResponse;
-import com.ohgiraffers.account.core.api.controller.v1.response.OrderDetailResponse;
-import com.ohgiraffers.account.core.api.controller.v1.response.SignInResponse;
+import com.ohgiraffers.account.core.api.controller.v1.response.*;
 import com.ohgiraffers.account.security.JwtTokenProvider;
 import com.ohgiraffers.account.storage.UserRepository;
 import com.ohgiraffers.common.support.error.CoreException;
@@ -12,9 +9,11 @@ import com.ohgiraffers.common.support.error.ErrorType;
 
 
 import com.ohgiraffers.common.support.response.ApiResult;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -28,12 +27,17 @@ public class UserService {
     private final CommandClient commandClient;
     private final StringRedisTemplate redisTemplate;
     private final JwtTokenProvider jwtTokenProvider;
+    private final PasswordEncoder passwordEncoder;
 
-    // ✅ JWT 로그인
+
     public SignInResponse signIn(String email, String password) {
-
-        User user = userRepository.findByEmailAndPassword(email, password)
+        String encodedPassword = passwordEncoder.encode(password);
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
+
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new CoreException(ErrorType.DEFAULT_ERROR);
+        }
 
         String accessToken = jwtTokenProvider.createToken(
                 user.getEmail(),     // username
@@ -71,8 +75,8 @@ public class UserService {
         if (userRepository.existsByEmail(email)) {
             throw new CoreException(ErrorType.DEFAULT_ERROR);
         }
-        // 2. User 생성 후 저장
-        User user = new User(email, password, name);
+        String encodedPassword = passwordEncoder.encode(password);
+        User user = new User(email, encodedPassword, name);
         userRepository.save(user);
 
     }
@@ -91,6 +95,21 @@ public class UserService {
     public OrderDetailResponse getMeOrders(Long userId) {
         List<MyPageOrderResponse> meOrders = commandClient.getMeOrders(userId);
         return new OrderDetailResponse(meOrders);
+    }
+
+    public UserResponse getUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
+
+        return new UserResponse(user.getId(), user.getEmail(), user.getMoney());
+    }
+
+    @Transactional
+    public void decreaseMoney(Long userId, Integer price) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
+
+        user.decreaseMoney(price);
     }
 
 //    public OrderDetailResponse getMeOrders(Long userId) {
