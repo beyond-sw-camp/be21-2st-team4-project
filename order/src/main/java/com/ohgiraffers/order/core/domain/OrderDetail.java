@@ -1,11 +1,10 @@
 package com.ohgiraffers.order.core.domain;
 
 import com.ohgiraffers.common.entity.BaseEntity;
+import com.ohgiraffers.order.core.api.command.response.PromotionResponse;
+import com.ohgiraffers.order.core.api.controller.v1.request.OrderRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,7 +27,7 @@ public class OrderDetail extends BaseEntity {
     private Integer quantity;
 
     @Column(name = "unit_price", nullable = false)
-    private Double unitPrice;
+    private Integer unitPrice;
 
     @Column(name = "subtotal", nullable = false)
     private Integer subtotal;
@@ -39,18 +38,17 @@ public class OrderDetail extends BaseEntity {
     @Column(name = "image_url", nullable = false)
     private String imageUrl;
 
-    public static OrderDetail of(Long orderId, Long promotionId
-            , Integer quantity, Integer unitPrice
-            ,String promotionName
-            , String imageUrl) {
-        OrderDetail detail = new OrderDetail();
-        detail.orderId = orderId;
-        detail.promotionId = promotionId;
-        detail.quantity = quantity;
-        detail.unitPrice = unitPrice.doubleValue();
-        detail.subtotal = unitPrice* quantity;
-        detail.promotionName = promotionName;
-        detail.imageUrl = imageUrl;
+    public static OrderDetail addDetail(Order order,  PromotionResponse promotion
+            , OrderRequest request) {
+        OrderDetail detail = new OrderDetail(
+                order.getId(),
+                promotion.id(),
+                request.getQuantity(),
+                promotion.salePrice(),
+                order.getTotalAmount(),
+                promotion.productImageUrl(),
+                promotion.productName()
+        );
 
         return detail;
     }

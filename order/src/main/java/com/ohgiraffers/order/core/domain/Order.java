@@ -10,6 +10,8 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,29 +36,15 @@ public class Order extends BaseEntity {
     @Column(name="order_status")
     private OrderStatus orderStatus = OrderStatus.DONE;
 
+    public Integer calPrice(Integer price, @NotNull @Positive Integer quantity) {
+        return totalAmount = price * quantity;
+    }
+
     public static Order create(Long userId) {
         Order order = new Order();
         order.userId = userId;
         order.orderStatus = OrderStatus.DONE;
+
         return order;
     }
-
-    @OneToMany
-    private List<OrderDetail> details = new ArrayList<>();
-
-    public void addDetail(PromotionResponse promotion, Integer quantity) {
-
-        OrderDetail detail = OrderDetail.of(
-                this.getId(),
-                promotion.id(),
-                quantity,
-                promotion.salePrice(),
-                promotion.productImageUrl(),
-                promotion.productName()
-        );
-
-        this.details.add(detail);
-        this.totalAmount += promotion.salePrice() * quantity;
-    }
-
 }

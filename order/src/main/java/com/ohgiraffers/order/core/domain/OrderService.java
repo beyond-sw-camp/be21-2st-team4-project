@@ -8,6 +8,7 @@ import com.ohgiraffers.order.core.api.command.promotion.PromotionValidator;
 import com.ohgiraffers.order.core.api.command.queue.QueueReader;
 import com.ohgiraffers.order.core.api.command.user.UserReader;
 import com.ohgiraffers.order.core.api.controller.v1.request.OrderRequest;
+import com.ohgiraffers.order.storage.OrderDetailRepository;
 import com.ohgiraffers.order.storage.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RLock;
@@ -25,6 +26,7 @@ public class OrderService {
     private final UserReader userReader;
     private final RedissonClient redissonClient;
     private final OrderRepository orderRepository;
+    private final OrderDetailRepository orderDetailRepository;
     private final QueueReader queueReader;
 
     @Transactional
@@ -53,16 +55,22 @@ public class OrderService {
 //            promotionReader.decrease(orderRequest);
 
             // 유저 잔액 차감
-//            userReader.decreaseMoney(user.id(), promotion.salePrice());
+            userReader.decreaseMoney(user.id(), promotion.salePrice());
 
             // Order 생성
+
             Order order = Order.create(user.id());
+            // 주문 금액 계산
+            var totalAmount = order.calPrice(promotion.salePrice(), orderRequest.getQuantity());
+
+            // Order 저장
+            orderRepository.save(order);
 
             // OrderDetail 생성
-            order.addDetail(promotion, orderRequest.getQuantity());
+            OrderDetail detail = OrderDetail.addDetail(order, promotion, orderRequest);
 
             // OrderDetail 저장
-            orderRepository.save(order);
+            orderDetailRepository.save(detail);
 
         } catch (InterruptedException e) {
             throw new CoreException(ErrorType.DEFAULT_ERROR);
