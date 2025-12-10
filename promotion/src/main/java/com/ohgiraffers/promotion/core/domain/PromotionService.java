@@ -45,35 +45,26 @@ public class PromotionService {
 
     @Transactional
     public void promotionSave(Long userId, PromotionRequest pr) {
-        AtomicReference<ResultType> createdSuccess = new AtomicReference<>(ResultType.ERROR);
-
 
         ProductResponse product = commandClient.getProduct(pr.getProductId());
         if (product == null) {
             throw new CoreException(ErrorType.DEFAULT_ERROR);
         }
 
-        Promotion promotion =
-                promotionRepository.findByProductId(pr.getProductId())
-                        .filter(p -> p.getPromotionStatus() != PromotionStatus.ENDED)
-                        .orElseGet(() -> {
-                            Promotion promotion1 = new Promotion(
-                                    userId,
-                                    pr.getProductId(),
-                                    pr.getDiscountRate(),
-                                    pr.getStartTime(),
-                                    pr.getEndTime(),
-                                    pr.getTotalQuantity()
-                            );
-                            if (pr.getStartTime().isAfter(LocalDateTime.now())) {
-                                promotion1.changeStatus(PromotionStatus.SCHEDULER);
-                            }
-                            createdSuccess.set(ResultType.SUCCESS);
-                            return promotionRepository.save(promotion1);
-                        });
+        Promotion promotion = new Promotion(
+                userId,
+                pr.getProductId(),
+                pr.getDiscountRate(),
+                pr.getStartTime(),
+                pr.getEndTime(),
+                pr.getTotalQuantity()
+        );
+
+        if (pr.getStartTime().isAfter(LocalDateTime.now())) {
+            promotion.changeStatus(PromotionStatus.SCHEDULER);
+        }
         promotion.setSalePrice((int) (pr.getDiscountRate() * product.price()));
-
-
+        promotionRepository.save(promotion);
     }
 
     @Transactional

@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PromotionRequest {
-    private Long adminId;
     private Long productId;
     private Double discountRate;
     private LocalDateTime startTime;
