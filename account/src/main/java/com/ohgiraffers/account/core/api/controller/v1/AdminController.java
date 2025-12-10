@@ -44,7 +44,7 @@ public class AdminController {
 
     @GetMapping("/admin/{id}")
     public ApiResult<AdminResponse> getAdmin(@PathVariable Long id) {
-        ApiResult.success(adminService.getAdmin(id));
+        return ApiResult.success(adminService.getAdmin(id));
     }
 
 }

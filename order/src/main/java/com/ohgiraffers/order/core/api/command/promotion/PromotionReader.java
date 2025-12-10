@@ -23,4 +23,12 @@ public class PromotionReader {
                 () -> new CoreException(ErrorType.DEFAULT_ERROR)
         );
     }
+
+    public PromotionResponse decrease(Long id, Integer quantity) {
+
+        return apiResult.unwrap(
+                client.decrease(id, quantity),
+                () -> new CoreException(ErrorType.DEFAULT_ERROR)
+        );
+    }
 }
