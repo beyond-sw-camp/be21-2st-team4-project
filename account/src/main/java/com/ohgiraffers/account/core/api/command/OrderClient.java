@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(name = "timedeal-order-service" , configuration = FeignClientConfig.class)
 public interface OrderClient {
 
-    @GetMapping("/api/v1/orders/me/orders")
+    @GetMapping("/me/orders")
     ApiResult<OrderDetailResponse> getMeOrders(
             @RequestParam Long userId
     );
