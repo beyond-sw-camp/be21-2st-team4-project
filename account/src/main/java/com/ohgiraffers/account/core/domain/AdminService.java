@@ -2,9 +2,15 @@ package com.ohgiraffers.account.core.domain;
 
 import com.ohgiraffers.account.core.api.controller.v1.request.AdminRequest;
 import com.ohgiraffers.account.core.api.controller.v1.response.AdminResponse;
+import com.ohgiraffers.account.core.api.controller.v1.response.AdminSignInResponse;
+import com.ohgiraffers.account.core.api.controller.v1.response.SignInResponse;
+import com.ohgiraffers.account.security.JwtTokenProvider;
 import com.ohgiraffers.account.storage.AdminRepository;
 import com.ohgiraffers.common.support.error.CoreException;
 import com.ohgiraffers.common.support.error.ErrorType;
+import jakarta.validation.constraints.NotBlank;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,45 +18,39 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class AdminService {
 
     private final AdminRepository adminRepository;
-
-    public AdminService(AdminRepository adminRepository) {
-        this.adminRepository = adminRepository;
-    }
+    private final JwtTokenProvider jwtTokenProvider;
+    private final PasswordEncoder passwordEncoder;
 
     // 관리자 등록
     @Transactional
-    public AdminResponse createAdmin(AdminRequest request) {
-        Admin admin = new Admin(
-                request.getEmail(),
-                request.getPassword(),
-                request.getCompany()
-        );
-        Admin saved = adminRepository.save(admin);
-        return AdminResponse.from(saved);
+    public void createAdmin(String email, String password, String company) {
+        // 1. 이메일 중복 검사
+        if (adminRepository.existsByEmail(email)) {
+            throw new CoreException(ErrorType.DEFAULT_ERROR);
+        }
+        String encodedPassword = passwordEncoder.encode(password);
+        Admin admin = new Admin(email, encodedPassword, company);
+        adminRepository.save(admin);
     }
 
-    // 관리자 단건 조회
-    @Transactional(readOnly = true)
-    public AdminResponse findById(Long adminId) {
-        Admin admin = adminRepository.findById(adminId)
+    public AdminSignInResponse adminSignIn(String email, String password) {
+        Admin admin = adminRepository.findByEmail(email)
                 .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
-        return AdminResponse.from(admin);
-    }
 
-    // 관리자 전체 조회
-    @Transactional(readOnly = true)
-    public List<AdminResponse> findAll() {
-        return adminRepository.findAll().stream()
-                .map(AdminResponse::from)
-                .collect(Collectors.toList());
-    }
+        if (!passwordEncoder.matches(password, admin.getPassword())) {
+            throw new CoreException(ErrorType.DEFAULT_ERROR);
+        }
 
-    // 관리자 삭제
-    @Transactional
-    public void deleteAdmin(Long adminId) {
-        adminRepository.deleteById(adminId);
+        String accessToken = jwtTokenProvider.createToken(
+                admin.getEmail(),
+                "ADMIN",
+                admin.getId()
+        );
+
+        return new AdminSignInResponse(admin.getId(), accessToken);
     }
 }

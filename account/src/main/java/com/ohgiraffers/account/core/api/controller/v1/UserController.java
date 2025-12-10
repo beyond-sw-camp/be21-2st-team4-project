@@ -1,11 +1,9 @@
 package com.ohgiraffers.account.core.api.controller.v1;
 
-import com.ohgiraffers.account.core.api.command.OrderClient;
 import com.ohgiraffers.account.core.api.controller.v1.request.LoginRequest;
 import com.ohgiraffers.account.core.api.controller.v1.request.SignUpRequest;
 import com.ohgiraffers.account.core.api.controller.v1.request.VerifyTokenRequest;
 import com.ohgiraffers.account.core.api.controller.v1.response.MyPageResponse;
-import com.ohgiraffers.account.core.api.controller.v1.response.MyPageOrderResponse;
 import com.ohgiraffers.account.core.api.controller.v1.response.OrderDetailResponse;
 import com.ohgiraffers.account.core.api.controller.v1.response.SignInResponse;
 import com.ohgiraffers.account.core.domain.UserService;
@@ -19,7 +17,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -87,6 +84,7 @@ public class UserController {
     })
     @GetMapping("/users/me")
     public ApiResult<MyPageResponse> getMe(@AuthenticationPrincipal String userId) {
+        System.out.println("userId = " + userId);
         return ApiResult.success(userService.getMe(Long.parseLong(userId)));
     }
 

@@ -15,6 +15,7 @@ import com.ohgiraffers.common.support.response.ApiResult;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -28,12 +29,17 @@ public class UserService {
     private final CommandClient commandClient;
     private final StringRedisTemplate redisTemplate;
     private final JwtTokenProvider jwtTokenProvider;
+    private final PasswordEncoder passwordEncoder;
 
-    // ✅ JWT 로그인
+
     public SignInResponse signIn(String email, String password) {
-
-        User user = userRepository.findByEmailAndPassword(email, password)
+        String encodedPassword = passwordEncoder.encode(password);
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
+
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new CoreException(ErrorType.DEFAULT_ERROR);
+        }
 
         String accessToken = jwtTokenProvider.createToken(
                 user.getEmail(),     // username
@@ -71,8 +77,8 @@ public class UserService {
         if (userRepository.existsByEmail(email)) {
             throw new CoreException(ErrorType.DEFAULT_ERROR);
         }
-        // 2. User 생성 후 저장
-        User user = new User(email, password, name);
+        String encodedPassword = passwordEncoder.encode(password);
+        User user = new User(email, encodedPassword, name);
         userRepository.save(user);
 
     }
