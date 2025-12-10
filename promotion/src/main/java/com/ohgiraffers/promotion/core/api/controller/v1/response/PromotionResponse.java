@@ -14,6 +14,7 @@ public record PromotionResponse (
         Integer salePrice,
         Double discountRate,
         Integer totalQuantity,
+        Integer soldQuantity,
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime startTime,
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")

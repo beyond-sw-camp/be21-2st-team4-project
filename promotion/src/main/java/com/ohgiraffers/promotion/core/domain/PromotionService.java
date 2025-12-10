@@ -121,6 +121,7 @@ public class PromotionService {
                     promotion.getSalePrice(),
                     promotion.getDiscountRate(),
                     promotion.getTotalQuantity(),
+                    promotion.getSoldQuantity(),
                     promotion.getStartTime(),
                     promotion.getEndTime(),
                     product.imageUrl()
@@ -151,6 +152,7 @@ public class PromotionService {
                     promotion.getSalePrice(),
                     promotion.getDiscountRate(),
                     promotion.getTotalQuantity(),
+                    promotion.getSoldQuantity(),
                     promotion.getStartTime(),
                     promotion.getEndTime(),
                     product.imageUrl()
@@ -192,6 +194,7 @@ public class PromotionService {
                 promotion.getSalePrice(),
                 promotion.getDiscountRate(),
                 promotion.getTotalQuantity(),
+                promotion.getSoldQuantity(),
                 promotion.getStartTime(),
                 promotion.getEndTime(),
                 product.imageUrl()
