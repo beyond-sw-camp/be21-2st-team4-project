@@ -23,24 +23,7 @@ public interface PromotionRepository extends JpaRepository<Promotion,Long> {
 
     List<Promotion> findAllByPromotionStatus(PromotionStatus promotionStatus);
 
-    List<Promotion> findByPromotionStatus(PromotionStatus promotionStatus);
-
     PromotionStatus findPromotionStatusById(Long id);
-
-
-    @Query("""
-    select
-         pm.id
-        ,pm.adminId
-        ,pm.productId
-        ,pm.salePrice
-        ,pm.discountRate
-        ,pm.totalQuantity
-        ,pm.startTime
-        ,pm.endTime
-    from Promotion pm
-""")
-    List<PromotionResponse> findAllPromotions();
 
     List<Promotion> findAll();
 
@@ -67,4 +50,5 @@ public interface PromotionRepository extends JpaRepository<Promotion,Long> {
     int findSoldQuantityById(Long id);
 
 
+    //Promotion findById(Long id);
 }
