@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.hibernate.query.Order;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -37,8 +38,9 @@ public class PromotionController {
             @ApiResponse(responseCode = "400", description = "잘못된 요청 (이미 진행중인 프로모션 생성)"),
             @ApiResponse(responseCode = "404", description = "타임딜을 찾을 수 없음")
     })
-    public ApiResult<?> save(@RequestBody PromotionRequest promotionRequest) {
-        promotionService.promotionSave(promotionRequest);
+    public ApiResult<?> save(@AuthenticationPrincipal String userId,
+            @RequestBody PromotionRequest promotionRequest) {
+        promotionService.promotionSave(Long.parseLong(userId),promotionRequest);
         return ApiResult.success();
     }
 
@@ -50,9 +52,10 @@ public class PromotionController {
             @ApiResponse(responseCode = "404", description = "타임딜을 찾을 수 없음")
     })
     public ApiResult<?> update(
+            @AuthenticationPrincipal String userId,
             @PathVariable long id,
             @RequestBody PromotionRequest promotionRequest) {
-        promotionService.promotionUpdateById(id, promotionRequest);
+        promotionService.promotionUpdateById(Long.parseLong(userId),id, promotionRequest);
         return ApiResult.success();
     }
 

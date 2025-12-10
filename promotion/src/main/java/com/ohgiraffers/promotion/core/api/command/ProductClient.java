@@ -10,6 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(name = "timedeal-product-service", configuration = FeignClientProperties.FeignClientConfiguration.class)
 public interface ProductClient {
 
-    @GetMapping("/api/v1/product/{id}")
+    @GetMapping("/{id}")
     ApiResult<ProductResponse> getProduct(@PathVariable("id") Long id);
 }

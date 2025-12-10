@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 public record PromotionResponse (
         @Schema(description = "")
         Long id,
-        Long adminId,
         Long productId,
         Integer salePrice,
         Double discountRate,
