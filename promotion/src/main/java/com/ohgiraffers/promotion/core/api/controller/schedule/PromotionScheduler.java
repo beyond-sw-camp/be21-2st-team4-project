@@ -24,58 +24,37 @@ public class PromotionScheduler {
     private final PromotionService promotionService;
     private final PromotionRepository promotionRepository;
 
-    @Scheduled(fixedRate = 6000)
+    @Scheduled(fixedRate = 5000)
     public void updatePromotionSchedule() {
-        List<Promotion> checkSchedule = promotionService.updateStatus();
-        for(Promotion promotion : checkSchedule){
-            if(promotion.getPromotionStatus() == null){
-                promotionService.updatePromotionStatus(promotion.getId(), SCHEDULER);
-            }
-            if(promotion.getPromotionStatus() == SCHEDULER && promotion.getStartTime().isBefore(LocalDateTime.now())){
-                promotionService.updatePromotionStatus(promotion.getId(), ACTIVE);
-                String key = TimedealKeys.setPromotion(promotion.getId());
-                String value = promotion.getTotalQuantity().toString();
-                stringRedisTemplate.opsForValue().set(key, value);
-            } else if (promotion.getPromotionStatus() == ACTIVE && promotion.getEndTime().isBefore(LocalDateTime.now())) {
-                promotionService.updatePromotionStatus(promotion.getId(),ENDED);
-                String key = TimedealKeys.setPromotion(promotion.getId());
-                stringRedisTemplate.delete(key);
+        LocalDateTime now = LocalDateTime.now();
 
-            }
+        List<Promotion> toActivate = promotionRepository.findByPromotionStatusAndStartTimeBefore(SCHEDULER, now);
+        for (Promotion promotion : toActivate) {
+            promotionService.updatePromotionStatus(promotion.getId(), ACTIVE);
 
+            String key = TimedealKeys.setPromotion(promotion.getId());
+            stringRedisTemplate.opsForValue().set(key, promotion.getTotalQuantity().toString());
         }
-    }
 
-    @Scheduled(fixedRate = 6000)
-    public void checkpromotion() {
-        List<RedisPromotionResponse> schedulePromotion =  promotionService.returnSchedule(ACTIVE);
-        List<RedisPromotionResponse> activePromotion = promotionService.returnSchedule(ENDED);
-        for(RedisPromotionResponse promotion : schedulePromotion){
-            if(promotionRepository.findPromotionById(promotion.id()).getStartTime().isBefore(LocalDateTime.now())) {
-                String key = TimedealKeys.setPromotion(promotion.id());
-                Integer value = promotion.totalQuantity();
-                stringRedisTemplate.opsForValue().set(key, String.valueOf(value));
-            }
+        List<Promotion> toEnd = promotionRepository.findByPromotionStatusAndEndTimeBefore(ACTIVE, now);
+        for (Promotion promotion : toEnd) {
+            promotionService.updatePromotionStatus(promotion.getId(), ENDED);
+
+            String key = TimedealKeys.setPromotion(promotion.getId());
+            stringRedisTemplate.delete(key);
         }
-        for(RedisPromotionResponse promotion : activePromotion){
-            if(promotionRepository.findPromotionById(promotion.id()).getEndTime().isBefore(LocalDateTime.now())) {
-                String key = TimedealKeys.setPromotion(promotion.id());
-                stringRedisTemplate.delete(key);
-            }
-        }
-        // List<promotionResponse> start, end
     }
 
     @Scheduled(fixedRate = 100000)
     public void checkQuantity(){
-        List<Promotion> checkSchedule = promotionService.updateStatus();
-
-        for(Promotion promotion : checkSchedule){
-            if(promotion.getTotalQuantity() != (promotion.getSoldQuantity() + (Long.parseLong(stringRedisTemplate.opsForValue().get(promotion.getId()))))){
-                String key = TimedealKeys.setPromotion(promotion.getId());
-                Integer value = promotion.getTotalQuantity() - promotion.getSoldQuantity();
-                stringRedisTemplate.opsForValue().set(key,String.valueOf(value));
-            }
-        }
+//        List<Promotion> checkSchedule = promotionService.updateStatus();
+//
+//        for(Promotion promotion : checkSchedule){
+//            if(promotion.getTotalQuantity() != (promotion.getSoldQuantity() + (Long.parseLong(stringRedisTemplate.opsForValue().get(promotion.getId()))))){
+//                String key = TimedealKeys.setPromotion(promotion.getId());
+//                Integer value = promotion.getTotalQuantity() - promotion.getSoldQuantity();
+//                stringRedisTemplate.opsForValue().set(key,String.valueOf(value));
+//            }
+//        }
     }
 }

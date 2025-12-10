@@ -36,7 +36,7 @@ public class PromotionService {
         promotion.decreaseSoldQuantity(orderRequest.getQuantity());
 
         String key = TimedealKeys.setPromotion(promotion.getId());
-        stringRedisTemplate.opsForValue().decrement(key, orderRequest.getQuantity());
+        Long result = stringRedisTemplate.opsForValue().decrement(key, orderRequest.getQuantity());
 
         return orderRequest.getQuantity();
     }

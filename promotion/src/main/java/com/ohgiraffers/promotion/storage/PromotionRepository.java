@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,6 +50,7 @@ public interface PromotionRepository extends JpaRepository<Promotion,Long> {
 
     int findSoldQuantityById(Long id);
 
-
+    List<Promotion> findByPromotionStatusAndStartTimeBefore(PromotionStatus status, LocalDateTime time);
+    List<Promotion> findByPromotionStatusAndEndTimeBefore(PromotionStatus status, LocalDateTime time);
     //Promotion findById(Long id);
 }
