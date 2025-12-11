@@ -11,6 +11,9 @@ public enum ErrorCode {
 
     // USER
     USER_NOT_FOUND,
+    USER_NOT_FOUND_EMAIL,
+    USER_NOT_EQUALS_PASSWORD,
+    USER_EXISTS_EMAIL,
 
     // QUEUE ERROR
     QUEUE_NOT_FOUND,

@@ -11,9 +11,9 @@ public enum ErrorType {
 
     // USER ERROR
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, ErrorCode.USER_NOT_FOUND, "유저가 존재하지 않습니다.", LogLevel.WARN),
-    USER_NOT_FOUND_EMAIL(HttpStatus.NOT_FOUND, ErrorCode.USER_NOT_FOUND, "일치하는 이메일이 없습니다.", LogLevel.WARN),
-    USER_NOT_EQUALS_PASSWORD(HttpStatus.NOT_FOUND, ErrorCode.USER_NOT_FOUND, "비밀번호가 일치하지 않습니다.", LogLevel.WARN),
-    USER_EXISTS_EMAIL(HttpStatus.NOT_FOUND, ErrorCode.USER_NOT_FOUND, "동일한 이메일이 존재합니다.", LogLevel.WARN),
+    USER_NOT_FOUND_EMAIL(HttpStatus.NOT_FOUND, ErrorCode.USER_NOT_FOUND_EMAIL, "일치하는 이메일이 없습니다.", LogLevel.WARN),
+    USER_NOT_EQUALS_PASSWORD(HttpStatus.UNAUTHORIZED,ErrorCode.USER_NOT_EQUALS_PASSWORD, "비밀번호가 일치하지 않습니다.", LogLevel.WARN),
+    USER_EXISTS_EMAIL(HttpStatus.CONFLICT, ErrorCode.USER_EXISTS_EMAIL, "동일한 이메일이 존재합니다.", LogLevel.WARN),
 
 
     // REDIS ERROR
