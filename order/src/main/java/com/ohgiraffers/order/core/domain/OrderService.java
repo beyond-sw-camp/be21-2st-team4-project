@@ -2,10 +2,9 @@ package com.ohgiraffers.order.core.domain;
 
 import com.ohgiraffers.common.support.error.CoreException;
 import com.ohgiraffers.common.support.error.ErrorType;
-import com.ohgiraffers.order.core.api.command.product.ProductReader;
 import com.ohgiraffers.order.core.api.command.promotion.PromotionReader;
 import com.ohgiraffers.order.core.api.command.promotion.PromotionValidator;
-import com.ohgiraffers.order.core.api.command.queue.QueueReader;
+import com.ohgiraffers.order.core.api.command.queue.QueueValidator;
 import com.ohgiraffers.order.core.api.command.user.UserReader;
 import com.ohgiraffers.order.core.api.controller.v1.request.OrderRequest;
 import com.ohgiraffers.order.storage.OrderDetailRepository;
@@ -27,7 +26,7 @@ public class OrderService {
     private final RedissonClient redissonClient;
     private final OrderRepository orderRepository;
     private final OrderDetailRepository orderDetailRepository;
-    private final QueueReader queueReader;
+    private final QueueValidator queueValidator;
 
     @Transactional
     public void createOrder(Long userId, OrderRequest orderRequest) {
@@ -39,14 +38,14 @@ public class OrderService {
 
         try {
             if (!lock.tryLock(5, 30, TimeUnit.SECONDS)) {
-                throw new CoreException(ErrorType.DEFAULT_ERROR);
+                throw new CoreException(ErrorType.REDIS_LOCK_EXPIRED);
             }
 
             var user = userReader.getUser(userId);
             var promotion = promotionReader.getPromotion(orderRequest.getPromotionId());
 
             // 대기열 통과 검증
-            queueReader.verify(promotion.id(), user.id());
+            queueValidator.verify(promotion.id(), user.id());
 
             // 프로모션 유효성 체크(상태, 재고)
             promotionValidator.validate(promotion, orderRequest.getQuantity());
@@ -58,13 +57,11 @@ public class OrderService {
             userReader.decreaseMoney(user.id(), promotion.salePrice());
 
             // 대기열 완료 처리
-            boolean completed = queueReader.complete(promotion.id(), user.id());
-            if (!completed) {
-                throw new CoreException(ErrorType.DEFAULT_ERROR);
-            }
+            queueValidator.complete(promotion.id(), user.id());
 
             // Order 생성
             Order order = Order.create(user.id());
+
             // 주문 금액 계산
             var totalAmount = order.calPrice(promotion.salePrice(), orderRequest.getQuantity());
 
@@ -78,7 +75,7 @@ public class OrderService {
             orderDetailRepository.save(detail);
 
         } catch (InterruptedException e) {
-            throw new CoreException(ErrorType.DEFAULT_ERROR);
+            throw new CoreException(ErrorType.ORDER_DB_ERROR);
         } finally {
             lock.unlock();
         }

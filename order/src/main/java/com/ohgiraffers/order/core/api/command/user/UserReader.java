@@ -19,7 +19,7 @@ public class UserReader {
 
         return apiResult.unwrap(
                 client.getUser(id),
-                () -> new CoreException(ErrorType.DEFAULT_ERROR)
+                () -> new CoreException(ErrorType.USER_READ_FAILED)
         );
     }
 
@@ -27,7 +27,7 @@ public class UserReader {
 
         apiResult.unwrap(
             client.decreaseMoney(id, price),
-            () -> new CoreException(ErrorType.DEFAULT_ERROR)
+            () -> new CoreException(ErrorType.USER_BALANCE_DECREASE_FAILED)
         );
     }
 }

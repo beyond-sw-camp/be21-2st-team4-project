@@ -1,23 +1,16 @@
 package com.ohgiraffers.order.core.domain;
 
 import com.ohgiraffers.common.entity.BaseEntity;
-import com.ohgiraffers.order.core.api.command.response.ProductResponse;
-import com.ohgiraffers.order.core.api.command.response.PromotionResponse;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
