@@ -45,16 +45,16 @@ public class PromotionScheduler {
         }
     }
 
-    @Scheduled(fixedRate = 100000)
+    @Scheduled(fixedRate = 500)
     public void checkQuantity(){
-//        List<Promotion> checkSchedule = promotionService.updateStatus();
-//
-//        for(Promotion promotion : checkSchedule){
-//            if(promotion.getTotalQuantity() != (promotion.getSoldQuantity() + (Long.parseLong(stringRedisTemplate.opsForValue().get(promotion.getId()))))){
-//                String key = TimedealKeys.setPromotion(promotion.getId());
-//                Integer value = promotion.getTotalQuantity() - promotion.getSoldQuantity();
-//                stringRedisTemplate.opsForValue().set(key,String.valueOf(value));
-//            }
-//        }
+        List<Promotion> checkSchedule = promotionRepository.findByPromotionStatus(ACTIVE);
+        for(Promotion promotion : checkSchedule){
+            String key = TimedealKeys.setPromotion(promotion.getId());
+            String redisQuantity = stringRedisTemplate.opsForValue().get(key);
+            if(Integer.parseInt(redisQuantity) != promotion.getTotalQuantity()-promotion.getSoldQuantity()){
+                redisQuantity = String.valueOf(promotion.getTotalQuantity() - promotion.getSoldQuantity());
+                stringRedisTemplate.opsForValue().set(key, redisQuantity);
+            }
+        }
     }
 }

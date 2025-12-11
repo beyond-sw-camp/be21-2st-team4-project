@@ -38,7 +38,7 @@ public class OrderService {
         RLock lock = redissonClient.getLock("lock:stock:" + orderRequest.getPromotionId());
 
         try {
-            if (!lock.tryLock(5, 1, TimeUnit.SECONDS)) {
+            if (!lock.tryLock(5, 30, TimeUnit.SECONDS)) {
                 throw new CoreException(ErrorType.DEFAULT_ERROR);
             }
 
@@ -46,7 +46,7 @@ public class OrderService {
             var promotion = promotionReader.getPromotion(orderRequest.getPromotionId());
 
             // 대기열 통과 검증
-//            queueReader.verify(promotion.id(), user.id());
+            queueReader.verify(promotion.id(), user.id());
 
             // 프로모션 유효성 체크(상태, 재고)
             promotionValidator.validate(promotion, orderRequest.getQuantity());
@@ -57,9 +57,14 @@ public class OrderService {
             // 유저 잔액 차감
             userReader.decreaseMoney(user.id(), promotion.salePrice());
 
+            // 대기열 완료 처리
+            boolean completed = queueReader.complete(promotion.id(), user.id());
+            if (!completed) {
+                throw new CoreException(ErrorType.DEFAULT_ERROR);
+            }
+
             // Order 생성
             Order order = Order.create(user.id());
-
             // 주문 금액 계산
             var totalAmount = order.calPrice(promotion.salePrice(), orderRequest.getQuantity());
 

@@ -17,8 +17,15 @@ public class QueueReader {
 
     public void verify(Long timedealId, Long userId) {
         apiResult.unwrap(
-            client.verifyQueue(timedealId, userId),
-            () -> new CoreException(ErrorType.DEFAULT_ERROR)
+                client.verifyQueue(timedealId, userId),
+                () -> new CoreException(ErrorType.DEFAULT_ERROR)
+        );
+    }
+
+    public boolean complete(Long timedealId, Long userId) {
+        return apiResult.unwrap(
+                client.completeQueue(timedealId, userId),
+                () -> new CoreException(ErrorType.DEFAULT_ERROR)
         );
     }
 }

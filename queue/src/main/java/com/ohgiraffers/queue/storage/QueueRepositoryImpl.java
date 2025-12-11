@@ -254,8 +254,8 @@ public class QueueRepositoryImpl implements QueueRepository {
         String proceedQueueKey = TimedealKeys.proceedQueue(timedealId);
 
         Set<String> users = zSetOps.rangeByScore(proceedQueueKey, 0, now);
-        if (users != null && !users.isEmpty()) {
-            zSetOps.removeRange(proceedQueueKey, 0, now);
+        for (String user : users) {
+            removeProceedQueue(timedealId, TimedealKeys.getUser(user));
         }
         return users;
     }

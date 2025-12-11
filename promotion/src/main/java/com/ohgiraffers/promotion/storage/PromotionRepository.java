@@ -52,5 +52,7 @@ public interface PromotionRepository extends JpaRepository<Promotion,Long> {
 
     List<Promotion> findByPromotionStatusAndStartTimeBefore(PromotionStatus status, LocalDateTime time);
     List<Promotion> findByPromotionStatusAndEndTimeBefore(PromotionStatus status, LocalDateTime time);
+
+    List<Promotion> findByPromotionStatus(PromotionStatus promotionStatus);
     //Promotion findById(Long id);
 }

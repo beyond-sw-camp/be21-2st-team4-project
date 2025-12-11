@@ -44,7 +44,7 @@ public class QueueController {
     @DeleteMapping
     @Operation(summary = "대기열 나가기", description = "사용자가 특정 타임딜 대기열에서 나갑니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공적으로 대기열에 참여함"),
+            @ApiResponse(responseCode = "200", description = "성공적으로 대기열에 나갑니다"),
             @ApiResponse(responseCode = "400", description = "잘못된 요청 (유효하지 않은 id)"),
             @ApiResponse(responseCode = "404", description = "타임딜을 찾을 수 없음")
     })
@@ -56,6 +56,26 @@ public class QueueController {
 
     ) {
         return ApiResult.success(queueService.leaveQueue(timedealId, Long.parseLong(userId)));
+    }
+
+    @DeleteMapping("/complete")
+    @Operation(summary = "대기열 완료 처리", description = "사용자가 특정 타임딜 대기열에서 완료처리됩니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공적으로 대기열에 완료함"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청 (유효하지 않은 id)"),
+            @ApiResponse(responseCode = "404", description = "타임딜을 찾을 수 없음")
+    })
+    public ApiResult<Boolean> completeQueue(
+            @Parameter(description = "유저 아이디", example = "1", required = true)
+            @Positive
+            @RequestParam(value = "userId") Long userId,
+
+            @Parameter(description = "타임딜 아이디", example = "1", required = true)
+            @Positive
+            @RequestParam(value = "timedealId") Long timedealId
+
+    ) {
+        return ApiResult.success(queueService.leaveQueue(timedealId, userId));
     }
 
     @GetMapping("/verify")
