@@ -62,13 +62,6 @@ public class Promotion extends BaseEntity {
         this.promotionStatus = promotionStatus;
     }
 
-    public void increaseSoldQuantity() {
-        if(this.soldQuantity > this.totalQuantity) {
-            throw new CoreException(ErrorType.DEFAULT_ERROR);
-        }
-        this.soldQuantity += 1;
-    }
-
     public void updatePromotion(Long adminId,
                                 Long productId,
                                 Double discountRate,
@@ -86,7 +79,7 @@ public class Promotion extends BaseEntity {
 
     public void decreaseSoldQuantity(Integer quantity) {
         if(this.soldQuantity + quantity > this.totalQuantity) {
-            throw new CoreException(ErrorType.DEFAULT_ERROR);
+            throw new CoreException(ErrorType.PROMOTION_SOLDQUANTITY_OVER);
         }
         this.soldQuantity += quantity;
     }

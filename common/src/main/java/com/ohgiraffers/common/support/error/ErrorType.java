@@ -30,7 +30,10 @@ public enum ErrorType {
     PRODUCT_UNAUTHORIZED(HttpStatus.FORBIDDEN, ErrorCode.PRODUCT_UNAUTHORIZED, "상품에 대한 권한이 없습니다.", LogLevel.WARN),
     PRODUCT_VALIDATION_ERROR(HttpStatus.BAD_REQUEST, ErrorCode.PRODUCT_VALIDATION_ERROR, "상품 요청 값이 올바르지 않습니다.", LogLevel.WARN),
 
-
+    // PROMOTION ERROR
+    PROMOTION_SOLDQUANTITY_OVER(HttpStatus.BAD_REQUEST, ErrorCode.PROMOTION_SOLDQUANTITY_OVER, "프로모션 판매 수량을 초과했습니다.", LogLevel.WARN),
+    PROMOTION_STATUS_ERROR(HttpStatus.BAD_REQUEST, ErrorCode.PROMOTION_STATUS_ERROR, "프로모션 상태가 올바르지 않습니다.", LogLevel.WARN),
+    PROMOTION_NOT_FOUND(HttpStatus.NOT_FOUND, ErrorCode.PROMOTION_NOT_FOUND, "프로모션이 존재하지 않습니다.", LogLevel.WARN),
 
     MAX_ERROR(null, null, null, null);
 
