@@ -21,7 +21,7 @@ public class PromotionReader {
 
         return apiResult.unwrap(
                 client.getPromotion(id),
-                () -> new CoreException(ErrorType.DEFAULT_ERROR)
+                () -> new CoreException(ErrorType.PROMOTION_READ_FAILED)
         );
     }
 
@@ -29,7 +29,7 @@ public class PromotionReader {
 
         return apiResult.unwrap(
                 client.checkTotalQuantity(orderRequest),
-                () -> new CoreException(ErrorType.DEFAULT_ERROR)
+                () -> new CoreException(ErrorType.PROMOTION_STOCK_DECREASE_FAILED)
         );
     }
 }

@@ -34,10 +34,10 @@ public class UserService {
     public SignInResponse signIn(String email, String password) {
         String encodedPassword = passwordEncoder.encode(password);
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
+                .orElseThrow(() -> new CoreException(ErrorType.USER_NOT_FOUND_EMAIL));
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new CoreException(ErrorType.USER_NOT_FOUND);
+            throw new CoreException(ErrorType.USER_NOT_EQUALS_PASSWORD);
         }
 
         String accessToken = jwtTokenProvider.createToken(
@@ -74,7 +74,7 @@ public class UserService {
     public void signUp(String email, String password, String name) {
         // 1. 이메일 중복 검사
         if (userRepository.existsByEmail(email)) {
-            throw new CoreException(ErrorType.DEFAULT_ERROR);
+            throw new CoreException(ErrorType.USER_EXISTS_EMAIL);
         }
         String encodedPassword = passwordEncoder.encode(password);
         User user = new User(email, encodedPassword, name);
@@ -84,7 +84,7 @@ public class UserService {
 
     public MyPageResponse getMe(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
+                .orElseThrow(() -> new CoreException(ErrorType.USER_NOT_FOUND));
 
         return new MyPageResponse(
                 user.getName(),
@@ -100,7 +100,7 @@ public class UserService {
 
     public UserResponse getUser(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
+                .orElseThrow(() -> new CoreException(ErrorType.USER_NOT_FOUND));
 
         return new UserResponse(user.getId(), user.getEmail(), user.getMoney());
     }
@@ -108,29 +108,9 @@ public class UserService {
     @Transactional
     public void decreaseMoney(Long userId, Integer price) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
+                .orElseThrow(() -> new CoreException(ErrorType.USER_NOT_FOUND));
 
         user.decreaseMoney(price);
     }
-
-//    public OrderDetailResponse getMeOrders(Long userId) {
-//        List<Order> orders = orderRepository.findByUserId(userId); // 병합 필요
-//
-//        List<MyPageOrderResponse> myPageOrders = new ArrayList<>();
-//        for (Order order : orders) {
-//            OrderDetail detail = orderDetailRepository.findByOrderId(order.getId())
-//                    .orElseThrow(() -> new CoreException(ErrorType.DEFAULT_ERROR));
-//            MyPageOrderResponse response = new MyPageOrderResponse(
-//                    order.getId(),
-//                    detail.getImageUrl(),
-//                    detail.getPromotionName(),
-//                    detail.getQuantity(),
-//                    detail.getSubtotal(),
-//                    order.getCreatedAt()
-//            );
-//            myPageOrders.add(response);
-//        }
-//        return new OrderDetailResponse(myPageOrders);
-//    }
 
 }
