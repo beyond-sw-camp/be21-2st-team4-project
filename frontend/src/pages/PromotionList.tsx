@@ -4,7 +4,7 @@ import type { MyPageResponse } from '../types/user';
 import { promotionService } from '../services/promotionService';
 import { userService } from '../services/userService';
 import { ProductCard } from '../components/promotion/ProductCard';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../contexts/AuthContext';
 
 export const PromotionList: React.FC = () => {
   const { user } = useAuth();
@@ -23,8 +23,9 @@ export const PromotionList: React.FC = () => {
   const loadPromotions = async () => {
     try {
       setLoading(true);
-      const data = await promotionService.getPromotions();
-      setPromotions(data);
+      // 활성화된(ACTIVE) 프로모션만 조회
+      const data = await promotionService.getPromotionsByStatus('ACTIVE');
+      setPromotions(data.promotions || []);
     } catch (err: any) {
       console.error('프로모션 로드 실패:', err);
       setError('프로모션 목록을 불러올 수 없습니다.');

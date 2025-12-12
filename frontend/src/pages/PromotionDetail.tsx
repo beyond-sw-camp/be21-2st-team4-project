@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import type { Promotion } from '../types/promotion';
 import { promotionService } from '../services/promotionService';
 import { queueService } from '../services/queueService';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../contexts/AuthContext';
 import { CountdownTimer } from '../components/promotion/CountdownTimer';
 import { Badge, Button } from '../components/common';
 

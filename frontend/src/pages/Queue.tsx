@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { QueueStatus } from '../components/queue/QueueStatus';
 import { useQueue } from '../hooks/useQueue';
@@ -7,11 +7,12 @@ import { Button } from '../components/common';
 export const Queue: React.FC = () => {
   const { promotionId } = useParams<{ promotionId: string }>();
   const navigate = useNavigate();
+  const [isEntering, setIsEntering] = useState(true);
 
   // 토큰 존재 여부로 로그인 상태 확인
   const isLoggedIn = !!localStorage.getItem('authToken');
 
-  const { queueData, loading, error, startPolling } = useQueue(
+  const { queueData, loading, error, enterQueue, startPolling } = useQueue(
     promotionId ? parseInt(promotionId) : null
   );
 
@@ -22,17 +23,36 @@ export const Queue: React.FC = () => {
       return;
     }
 
-    if (promotionId) {
-      startPolling();
-    }
+    // 페이지 진입 시 자동으로 대기열 입장
+    const enter = async () => {
+      if (promotionId) {
+        setIsEntering(true);
+        try {
+          await enterQueue();
+        } catch (err) {
+          console.error('대기열 입장 실패:', err);
+        } finally {
+          setIsEntering(false);
+        }
+      }
+    };
+
+    enter();
   }, [promotionId, isLoggedIn]);
 
   const handlePurchase = () => {
     navigate(`/checkout/${promotionId}`);
   };
 
-  const handleRejoin = () => {
-    window.location.reload();
+  const handleRejoin = async () => {
+    setIsEntering(true);
+    try {
+      await enterQueue();
+    } catch (err) {
+      console.error('대기열 재입장 실패:', err);
+    } finally {
+      setIsEntering(false);
+    }
   };
 
   if (!isLoggedIn) {
@@ -54,12 +74,14 @@ export const Queue: React.FC = () => {
     );
   }
 
-  if (loading || !queueData) {
+  if (loading || isEntering || !queueData) {
     return (
       <div className="min-h-screen bg-bg-gray flex items-center justify-center px-4">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-sale-red mx-auto mb-4"></div>
-          <p className="text-text-meta">큐 정보를 불러오는 중...</p>
+          <p className="text-text-meta">
+            {isEntering ? '대기열에 입장 중...' : '큐 정보를 불러오는 중...'}
+          </p>
         </div>
       </div>
     );

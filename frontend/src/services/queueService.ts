@@ -8,10 +8,11 @@ export const queueService = {
   /**
    * Enter queue for a promotion
    * userId는 JWT 토큰에서 자동 추출됨
+   * Gateway RewritePath 패턴 매칭을 위해 trailing slash 필요
    */
   async enterQueue(timedealId: number): Promise<QueueResponse> {
     const response = await api.post<ApiResult<QueueResponse>>(
-      API_ENDPOINTS.QUEUE_ENTER,
+      `${API_ENDPOINTS.QUEUE_ENTER}/`,
       null,
       { params: { timedealId } }
     );
@@ -20,12 +21,13 @@ export const queueService = {
 
   /**
    * Check queue status
-   * userId는 JWT 토큰에서 자동 추출됨
+   * 백엔드에서 userId를 query parameter로 요구함
    */
   async checkStatus(timedealId: number): Promise<QueueResponse> {
+    const userId = localStorage.getItem('userId');
     const response = await api.get<ApiResult<QueueResponse>>(
-      API_ENDPOINTS.QUEUE_STATUS,
-      { params: { timedealId } }
+      `${API_ENDPOINTS.QUEUE_STATUS}/`,
+      { params: { timedealId, userId } }
     );
     return handleApiResponse(response.data);
   },
@@ -36,7 +38,7 @@ export const queueService = {
    */
   async leaveQueue(timedealId: number): Promise<boolean> {
     const response = await api.delete<ApiResult<boolean>>(
-      API_ENDPOINTS.QUEUE_ENTER,
+      `${API_ENDPOINTS.QUEUE_ENTER}/`,
       { params: { timedealId } }
     );
     return handleApiResponse(response.data);

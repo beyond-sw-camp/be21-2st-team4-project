@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { MyPageOrderResponse } from '../types/order';
 import { orderService } from '../services/orderService';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../contexts/AuthContext';
 import { Button } from '../components/common';
 
 export const Orders: React.FC = () => {

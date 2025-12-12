@@ -46,7 +46,7 @@ public class Promotion extends BaseEntity {
 
     @Column(name = "promotion_status")
     @Enumerated(EnumType.STRING)
-    private PromotionStatus promotionStatus;
+    private PromotionStatus promotionStatus = PromotionStatus.SCHEDULER;
 
 
     public Promotion(Long adminId, Long productId, Double discountRate, LocalDateTime startTime, LocalDateTime endTime, Integer totalQuantity) {

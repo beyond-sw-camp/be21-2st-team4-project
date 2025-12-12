@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Layout } from './components/layout';
-import { useAuth } from './hooks/useAuth';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 
 // Pages
 import { RoleSelect } from './pages/RoleSelect';
@@ -16,11 +16,23 @@ import { OrderComplete } from './pages/OrderComplete';
 import { Orders } from './pages/Orders';
 import { AdminDashboard } from './pages/AdminDashboard';
 
-function App() {
-  const { user, logout } = useAuth();
+// 라우트를 별도 컴포넌트로 분리 (AuthProvider 내부에서 useAuth 사용)
+function AppRoutes() {
+  const { user, loading, logout } = useAuth();
+
+  // 로딩 중일 때 표시
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-bg-gray">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sale-red mx-auto"></div>
+          <p className="mt-4 text-text-secondary">로딩 중...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <BrowserRouter>
       <Routes>
         {/* Role Selection - Entry Point */}
         <Route path="/" element={<RoleSelect />} />
@@ -117,6 +129,15 @@ function App() {
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
     </BrowserRouter>
   );
 }

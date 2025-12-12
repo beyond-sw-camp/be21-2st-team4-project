@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import type { Promotion } from '../types/promotion';
 import { promotionService } from '../services/promotionService';
 import { orderService } from '../services/orderService';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../contexts/AuthContext';
 import { Button } from '../components/common';
 
 export const Checkout: React.FC = () => {
@@ -113,7 +113,8 @@ export const Checkout: React.FC = () => {
   const originalPrice = promotion.originalPrice || 0;
   const salePrice = promotion.salePrice || Math.round(originalPrice * (1 - promotion.discountRate / 100));
   const totalPrice = salePrice * quantity;
-  const totalDiscount = (originalPrice - salePrice) * quantity;
+  // 할인 금액은 양수로 표시 (절대값 사용)
+  const totalDiscount = Math.abs((originalPrice - salePrice) * quantity);
 
   if (isSoldOut) {
     return (
