@@ -30,7 +30,7 @@ public class Promotion extends BaseEntity {
     private Integer salePrice;
 
     @Column(name = "discount_rate")
-    private Double discountRate;
+    private Integer discountRate;
 
     @Column(name = "start_time")
     private LocalDateTime startTime;
@@ -46,10 +46,10 @@ public class Promotion extends BaseEntity {
 
     @Column(name = "promotion_status")
     @Enumerated(EnumType.STRING)
-    private PromotionStatus promotionStatus;
+    private PromotionStatus promotionStatus = PromotionStatus.SCHEDULER;
 
 
-    public Promotion(Long adminId, Long productId, Double discountRate, LocalDateTime startTime, LocalDateTime endTime, Integer totalQuantity) {
+    public Promotion(Long adminId, Long productId, Integer discountRate, LocalDateTime startTime, LocalDateTime endTime, Integer totalQuantity) {
         this.adminId = adminId;
         this.productId = productId;
         this.discountRate = discountRate;
@@ -64,7 +64,7 @@ public class Promotion extends BaseEntity {
 
     public void updatePromotion(Long adminId,
                                 Long productId,
-                                Double discountRate,
+                                Integer discountRate,
                                 LocalDateTime startTime,
                                 LocalDateTime endTime,
                                 Integer totalQuantity) {

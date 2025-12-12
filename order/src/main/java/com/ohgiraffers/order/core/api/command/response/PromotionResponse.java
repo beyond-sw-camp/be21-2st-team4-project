@@ -11,7 +11,7 @@ public record PromotionResponse (
         String productName,
         Integer originalPrice,
         Integer salePrice,
-        Double discountRate,
+        Integer discountRate,
         Integer totalQuantity,
         Integer soldQuantity,
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")

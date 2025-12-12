@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class PromotionRequest {
     private Long productId;
-    private Double discountRate;
+    private Integer discountRate;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private Integer totalQuantity;
