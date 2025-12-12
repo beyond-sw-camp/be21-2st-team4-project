@@ -71,7 +71,7 @@ public class PromotionService {
         if (pr.getStartTime().isAfter(LocalDateTime.now())) {
             promotion.changeStatus(PromotionStatus.SCHEDULER);
         }
-        promotion.setSalePrice((int) (product.price() - (pr.getDiscountRate() * product.price())));
+        promotion.setSalePrice((int)((product.price()) * (1 - (promotion.getDiscountRate()/100.0)))));
         promotionRepository.save(promotion);
     }
 

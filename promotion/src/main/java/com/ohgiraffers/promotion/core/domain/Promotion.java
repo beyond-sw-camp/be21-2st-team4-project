@@ -30,7 +30,7 @@ public class Promotion extends BaseEntity {
     private Integer salePrice;
 
     @Column(name = "discount_rate")
-    private Double discountRate;
+    private Integer discountRate;
 
     @Column(name = "start_time")
     private LocalDateTime startTime;
