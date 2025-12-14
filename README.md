@@ -151,6 +151,15 @@ TimeDeal은 관리자가 선택한 특정 상품을 제한된 시간 동안 특�
 
 ---
 # DDD
+
+<img width="1239" height="687" alt="image" src="https://github.com/user-attachments/assets/46388f3a-52ed-4cf5-b469-194522f98d20" />
+
+<img width="976" height="710" alt="image" src="https://github.com/user-attachments/assets/2d606271-0efb-4619-bb64-fcd87fd395ff" />
+
+<img width="1011" height="648" alt="image" src="https://github.com/user-attachments/assets/f3b073d5-dd87-4132-94be-836721448515" />
+
+<img width="1020" height="690" alt="image" src="https://github.com/user-attachments/assets/50aee45f-bf33-4bb9-9ccf-3191b5a1ee5b" />
+
 <img width="1745" height="899" alt="image" src="https://github.com/user-attachments/assets/11e44155-1437-4434-9363-c7da76db82f7" />
 
 ---
