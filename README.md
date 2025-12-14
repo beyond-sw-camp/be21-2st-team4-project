@@ -154,6 +154,10 @@ TimeDeal은 관리자가 선택한 특정 상품을 제한된 시간 동안 특�
 <img width="1745" height="899" alt="image" src="https://github.com/user-attachments/assets/11e44155-1437-4434-9363-c7da76db82f7" />
 
 ---
+# 요구사항 명세서
+<img width="1218" height="1157" alt="image" src="https://github.com/user-attachments/assets/1826873e-7558-436e-9eb9-315eb9028406" />
+
+---
 # ERD
 <img width="1032" height="708" alt="image" src="https://github.com/user-attachments/assets/e6b681bc-8f47-4bde-8a70-87d3f01b5026" />
 
@@ -162,12 +166,24 @@ TimeDeal은 관리자가 선택한 특정 상품을 제한된 시간 동안 특�
 <img width="1218" height="1157" alt="image" src="https://github.com/user-attachments/assets/89500fba-39b3-46e9-9bbb-92f18e2cb233" />
 
 ---
+# REST API 설계 문서
 
-# 요구사항 명세서
-<img width="1218" height="1157" alt="image" src="https://github.com/user-attachments/assets/1826873e-7558-436e-9eb9-315eb9028406" />
+<img width="1465" height="422" alt="image" src="https://github.com/user-attachments/assets/3892dcb2-38c5-40e4-8f67-b61d2678209f" />
+
+<img width="1853" height="268" alt="image" src="https://github.com/user-attachments/assets/4d2baf9f-ce1a-4df6-b3a8-dc672a4a5a64" />
+
+<img width="1352" height="791" alt="image" src="https://github.com/user-attachments/assets/a9982e27-b81a-4850-8f9f-165e8d7dc3d0" />
+
+<img width="1853" height="690" alt="image" src="https://github.com/user-attachments/assets/d4e039a7-fc0b-4e9a-8940-8eb54cd8be5c" />
+
+<img width="1836" height="682" alt="image" src="https://github.com/user-attachments/assets/912a4389-4ed0-4a51-bbf9-fe2a215e2b58" />
 
 ---
 # 테스트 케이스 명세서
 <img width="2066" height="627" alt="image" src="https://github.com/user-attachments/assets/bd673426-fbca-481b-9b02-813840b89ae8" />
+
+---
+# MSA 아키텍처 구조도
+<img width="1920" height="792" alt="image" src="https://github.com/user-attachments/assets/82f3be8a-2a9e-4427-8bb2-1d077b6edc6e" />
 
 
